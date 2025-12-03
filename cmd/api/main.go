@@ -3,13 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
-	"time"
 
 	config "github.com/EmersonRabelo/first-api-go/internal/config"
 	interfaces "github.com/EmersonRabelo/first-api-go/internal/config/interfaces"
 	database "github.com/EmersonRabelo/first-api-go/internal/database"
-	"github.com/gin-gonic/gin"
+	"github.com/EmersonRabelo/first-api-go/internal/router"
 )
 
 var setting interfaces.SettingProvider
@@ -31,12 +29,11 @@ func main() {
 		log.Fatal("Falha ao executar migrations:", err)
 	}
 
-	fmt.Println(setting)
-}
+	r := router.SetupRouter()
 
-func healthCheck(context *gin.Context) {
-	context.JSON(http.StatusOK, gin.H{
-		"status": "running",
-		"time":   time.Now(),
-	})
+	port := setting.GetServer().Port
+
+	if err := r.Run(fmt.Sprintf(":%s", port)); err != nil {
+		log.Fatal("Falha ao iniciar servidor:", err)
+	}
 }
