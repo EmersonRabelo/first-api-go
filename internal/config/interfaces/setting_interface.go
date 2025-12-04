@@ -1,13 +1,13 @@
 package interfaces
 
 import (
-	model "github.com/EmersonRabelo/first-api-go/internal/config/model"
+	types "github.com/EmersonRabelo/first-api-go/internal/config/types"
 )
 
 type SettingProvider interface {
 	GetEnvironment() string
-	GetServer() model.Server
-	GetDatabase() model.Database
+	GetServer() types.Server
+	GetDatabase() types.Database
 	IsProd() bool
 	IsTest() bool
 	IsLocal() bool

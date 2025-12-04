@@ -2,13 +2,13 @@ package config
 
 import (
 	"github.com/EmersonRabelo/first-api-go/internal/config/interfaces"
-	"github.com/EmersonRabelo/first-api-go/internal/config/model"
+	types "github.com/EmersonRabelo/first-api-go/internal/config/types"
 )
 
 var AppSetting interfaces.SettingProvider
 
 func GetSetting() interfaces.SettingProvider {
-	AppSetting = model.LoadSetting()
+	AppSetting = types.LoadSetting()
 
 	return AppSetting
 }
