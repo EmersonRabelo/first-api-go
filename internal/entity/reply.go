@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Replay struct {
+type Reply struct {
 	Id        uuid.UUID      `gorm:"type:uuid;primaryKey;column:reply_id" json:"id"`
 	UserId    uuid.UUID      `gorm:"type:uuid;not null;column:user_id;uniqueIndex:idx_user_replies" json:"user_id"`
 	User      User           `gorm:"foreignKey:UserId;references:Id"`
@@ -20,6 +20,6 @@ type Replay struct {
 	DeletedAt gorm.DeletedAt `gorm:"index;column:deleted_at" json:"deleted_at"`
 }
 
-func (re *Replay) TableName() string {
+func (re *Reply) TableName() string {
 	return "replies"
 }
