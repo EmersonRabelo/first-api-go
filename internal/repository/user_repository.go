@@ -7,7 +7,7 @@ import (
 )
 
 type UserRepository interface {
-	Create(user *entity.User)
+	Create(user *entity.User) error
 	FindById(id uuid.UUID) (*entity.User, error)
 	FindAll(page, pageSize int) ([]entity.User, int64, error)
 	Update(user *entity.User) error
@@ -22,25 +22,40 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepository{db: db}
 }
 
-// Create implements UserRepository.
-func (u *userRepository) Create(user *entity.User) {
-	panic("unimplemented")
+func (u *userRepository) Create(user *entity.User) error {
+	return u.db.Create(user).Error
 }
 
-// FindAll implements UserRepository.
 func (u *userRepository) FindAll(page int, pageSize int) ([]entity.User, int64, error) {
-	panic("unimplemented")
+	var users []entity.User
+	var amount int64
+
+	u.db.Model(&entity.User{}).Count(&amount)
+
+	offset := (page - 1) * pageSize
+
+	if err := u.db.Offset(offset).Limit(pageSize).Find(&users).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return users, amount, nil
+
 }
 
-// FindById implements UserRepository.
 func (u *userRepository) FindById(id uuid.UUID) (*entity.User, error) {
-	panic("unimplemented")
+	var user entity.User
+
+	if err := u.db.First(&user, id).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 func (u *userRepository) Update(user *entity.User) error {
-	panic("unimplemented")
+	return u.db.Save(user).Error
 }
 
 func (u *userRepository) Delete(id uuid.UUID) error {
-	panic("unimplemented")
+	return u.db.Delete(&entity.User{}, id).Error
 }

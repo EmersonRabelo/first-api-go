@@ -7,7 +7,7 @@ import (
 )
 
 type ReplyRepository interface {
-	Create(post *entity.Reply)
+	Create(post *entity.Reply) error
 	FindById(id uuid.UUID) (*entity.Reply, error)
 	FindAll(page, pageSize int) ([]entity.Reply, int64, error)
 	Update(reply *entity.Reply) error
@@ -22,14 +22,8 @@ func NewReplyRepository(db *gorm.DB) ReplyRepository {
 	return &replyRepository{db: db}
 }
 
-// Create implements ReplyRepository.
-func (r *replyRepository) Create(post *entity.Reply) {
-	panic("unimplemented")
-}
-
-// Delete implements ReplyRepository.
-func (r *replyRepository) Delete(id uuid.UUID) error {
-	panic("unimplemented")
+func (r *replyRepository) Create(post *entity.Reply) error {
+	return r.db.Create(post).Error
 }
 
 // FindAll implements ReplyRepository.
@@ -44,5 +38,9 @@ func (r *replyRepository) FindById(id uuid.UUID) (*entity.Reply, error) {
 
 // Update implements ReplyRepository.
 func (r *replyRepository) Update(reply *entity.Reply) error {
-	panic("unimplemented")
+	return r.db.Save(reply).Error
+}
+
+func (r *replyRepository) Delete(id uuid.UUID) error {
+	return r.db.Delete(r).Error
 }
