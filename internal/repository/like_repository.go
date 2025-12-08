@@ -7,7 +7,7 @@ import (
 )
 
 type LikeRepository interface {
-	Create(post *entity.Like)
+	Create(like *entity.Like) error
 	FindById(id uuid.UUID) (*entity.Like, error)
 	FindAll(page, pageSize int) ([]entity.Like, int64, error)
 	Update(like *entity.Like) error
@@ -22,27 +22,40 @@ func NewLikeRepository(db *gorm.DB) LikeRepository {
 	return &likeRepository{db: db}
 }
 
-// Create implements LikeRepository.
-func (l *likeRepository) Create(post *entity.Like) {
-	panic("unimplemented")
+func (l *likeRepository) Create(like *entity.Like) error {
+	return l.db.Create(like).Error
 }
 
-// Delete implements LikeRepository.
-func (l *likeRepository) Delete(id uuid.UUID) error {
-	panic("unimplemented")
-}
-
-// FindAll implements LikeRepository.
 func (l *likeRepository) FindAll(page int, pageSize int) ([]entity.Like, int64, error) {
-	panic("unimplemented")
+	var likes []entity.Like
+	var amount int64
+
+	l.db.Model(&entity.Like{}).Count(&amount)
+
+	offset := (page - 1) * pageSize
+
+	if err := l.db.Offset(offset).Limit(pageSize).Find(&likes).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return likes, amount, nil
+
 }
 
-// FindById implements LikeRepository.
 func (l *likeRepository) FindById(id uuid.UUID) (*entity.Like, error) {
-	panic("unimplemented")
+	var like entity.Like
+
+	if err := l.db.First(like, id).Error; err != nil {
+		return nil, err
+	}
+
+	return &like, nil
 }
 
-// Update implements LikeRepository.
 func (l *likeRepository) Update(like *entity.Like) error {
-	panic("unimplemented")
+	return l.db.Save(like).Error
+}
+
+func (l *likeRepository) Delete(id uuid.UUID) error {
+	return l.db.Delete(l).Error
 }
