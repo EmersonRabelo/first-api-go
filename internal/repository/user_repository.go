@@ -9,6 +9,8 @@ import (
 type UserRepository interface {
 	Create(user *entity.User) error
 	FindById(id uuid.UUID) (*entity.User, error)
+	FindByEmail(email *string) (*entity.User, error)
+	FindByName(name *string) (*entity.User, error)
 	FindAll(page, pageSize int) ([]entity.User, int64, error)
 	Update(user *entity.User) error
 	Delete(id uuid.UUID) error
@@ -46,6 +48,26 @@ func (u *userRepository) FindById(id uuid.UUID) (*entity.User, error) {
 	var user entity.User
 
 	if err := u.db.First(&user, id).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (u *userRepository) FindByEmail(email *string) (*entity.User, error) {
+	var user entity.User
+
+	if err := u.db.Where("user_email = ?", email).First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (u *userRepository) FindByName(name *string) (*entity.User, error) {
+	var user entity.User
+
+	if err := u.db.Where("user_name = ?", name).First(&user).Error; err != nil {
 		return nil, err
 	}
 
