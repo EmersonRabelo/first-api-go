@@ -26,17 +26,31 @@ func (r *replyRepository) Create(post *entity.Reply) error {
 	return r.db.Create(post).Error
 }
 
-// FindAll implements ReplyRepository.
 func (r *replyRepository) FindAll(page int, pageSize int) ([]entity.Reply, int64, error) {
-	panic("unimplemented")
+	var replies []entity.Reply
+	var amount int64
+
+	r.db.Model(&entity.Reply{}).Count(&amount)
+
+	offset := (page - 1) * pageSize
+
+	if err := r.db.Offset(offset).Limit(pageSize).Find(&replies).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return replies, amount, nil
 }
 
-// FindById implements ReplyRepository.
 func (r *replyRepository) FindById(id uuid.UUID) (*entity.Reply, error) {
-	panic("unimplemented")
+	var reply entity.Reply
+
+	if err := r.db.First(&reply, id).Error; err != nil {
+		return nil, err
+	}
+
+	return &reply, nil
 }
 
-// Update implements ReplyRepository.
 func (r *replyRepository) Update(reply *entity.Reply) error {
 	return r.db.Save(reply).Error
 }
