@@ -13,4 +13,5 @@ type LikeResponseDTO struct {
 	Quantity  uint64    `json:"quantity"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+	DeletedAt time.Time `json:"deleted_at"`
 }
