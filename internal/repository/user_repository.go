@@ -8,12 +8,12 @@ import (
 
 type UserRepository interface {
 	Create(user *entity.User) error
-	FindById(id uuid.UUID) (*entity.User, error)
+	FindById(id *uuid.UUID) (*entity.User, error)
 	FindByEmail(email *string) (*entity.User, error)
 	FindByName(name *string) (*entity.User, error)
 	FindAll(page, pageSize int) ([]entity.User, int64, error)
 	Update(user *entity.User) error
-	Delete(id uuid.UUID) error
+	Delete(id *uuid.UUID) error
 }
 
 type userRepository struct {
@@ -44,7 +44,7 @@ func (u *userRepository) FindAll(page int, pageSize int) ([]entity.User, int64, 
 
 }
 
-func (u *userRepository) FindById(id uuid.UUID) (*entity.User, error) {
+func (u *userRepository) FindById(id *uuid.UUID) (*entity.User, error) {
 	var user entity.User
 
 	if err := u.db.First(&user, id).Error; err != nil {
@@ -78,6 +78,6 @@ func (u *userRepository) Update(user *entity.User) error {
 	return u.db.Save(user).Error
 }
 
-func (u *userRepository) Delete(id uuid.UUID) error {
+func (u *userRepository) Delete(id *uuid.UUID) error {
 	return u.db.Delete(&entity.User{}, id).Error
 }
