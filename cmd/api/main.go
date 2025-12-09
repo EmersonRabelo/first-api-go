@@ -6,8 +6,11 @@ import (
 
 	config "github.com/EmersonRabelo/first-api-go/internal/config"
 	interfaces "github.com/EmersonRabelo/first-api-go/internal/config/interfaces"
+	"github.com/EmersonRabelo/first-api-go/internal/controller"
 	database "github.com/EmersonRabelo/first-api-go/internal/database"
+	"github.com/EmersonRabelo/first-api-go/internal/repository"
 	"github.com/EmersonRabelo/first-api-go/internal/router"
+	"github.com/EmersonRabelo/first-api-go/internal/service"
 )
 
 var setting interfaces.SettingProvider
@@ -29,7 +32,13 @@ func main() {
 		log.Fatal("Falha ao executar migrations:", err)
 	}
 
-	r := router.SetupRouter()
+	userRepository := repository.NewUserRepository(db)
+
+	userService := service.NewUserService(userRepository)
+
+	userHandler := controller.NewUserHandler(userService)
+
+	r := router.SetupRouter(userHandler)
 
 	port := setting.GetServer().Port
 
