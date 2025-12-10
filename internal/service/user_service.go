@@ -53,6 +53,7 @@ func (u *userService) toUserReponseDto(user *entity.User) *dto.UserResponseDTO {
 		Id:        user.Id,
 		Name:      user.Name,
 		Email:     user.Email,
+		IsActive:  user.IsActive,
 		CreatedAT: user.CreatedAt,
 		UpdatedAt: &user.UpdatedAt,
 		DeletedAt: &user.DeletedAt,
