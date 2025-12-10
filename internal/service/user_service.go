@@ -38,6 +38,8 @@ func (u *userService) Create(req *dto.CreateDTO) (*dto.UserResponseDTO, error) {
 		Email:     req.Email,
 		IsActive:  true,
 		CreatedAt: time.Now(),
+		UpdatedAt: nil,
+		DeletedAt: nil,
 	}
 
 	if err := u.repository.Create(user); err != nil {
@@ -55,8 +57,8 @@ func (u *userService) toUserReponseDto(user *entity.User) *dto.UserResponseDTO {
 		Email:     user.Email,
 		IsActive:  user.IsActive,
 		CreatedAT: user.CreatedAt,
-		UpdatedAt: &user.UpdatedAt,
-		DeletedAt: &user.DeletedAt,
+		UpdatedAt: user.UpdatedAt,
+		DeletedAt: user.DeletedAt,
 	}
 }
 
