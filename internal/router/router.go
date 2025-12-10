@@ -22,7 +22,11 @@ func SetupRouter(userHandler *controller.UserHandler) *gin.Engine {
 
 		users := v1.Group("/users")
 		{
+			users.GET("", userHandler.FindAll)
+			users.GET("/:id", userHandler.FindById)
 			users.POST("", userHandler.Create)
+			users.PUT("/:id", userHandler.Update)
+			users.DELETE("/:id", userHandler.Delete)
 		}
 
 	}
