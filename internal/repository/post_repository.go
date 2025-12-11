@@ -8,10 +8,10 @@ import (
 
 type PostRepository interface {
 	Create(post *entity.Post) error
-	FindById(id uuid.UUID) (*entity.Post, error)
+	FindById(id *uuid.UUID) (*entity.Post, error)
 	FindAll(page, pageSize int) ([]entity.Post, int64, error)
 	Update(post *entity.Post) error
-	Delete(id uuid.UUID) error
+	Delete(id *uuid.UUID) error
 }
 
 type postRepository struct {
@@ -26,7 +26,7 @@ func (p *postRepository) Create(post *entity.Post) error {
 	return p.db.Create(post).Error
 }
 
-func (p *postRepository) FindById(id uuid.UUID) (*entity.Post, error) {
+func (p *postRepository) FindById(id *uuid.UUID) (*entity.Post, error) {
 	var post entity.Post
 
 	if err := p.db.First(&post, id).Error; err != nil {
@@ -55,6 +55,6 @@ func (p *postRepository) Update(post *entity.Post) error {
 	return p.db.Save(post).Error
 }
 
-func (p *postRepository) Delete(id uuid.UUID) error {
+func (p *postRepository) Delete(id *uuid.UUID) error {
 	return p.db.Delete(p).Error
 }
