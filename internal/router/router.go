@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(userHandler *controller.UserHandler) *gin.Engine {
+func SetupRouter(userHandler *controller.UserHandler, postHandler *controller.PostHandler) *gin.Engine {
 	r := gin.Default()
 
 	v1 := r.Group("/api/v1")
@@ -27,6 +27,15 @@ func SetupRouter(userHandler *controller.UserHandler) *gin.Engine {
 			users.POST("", userHandler.Create)
 			users.PUT("/:id", userHandler.Update)
 			users.DELETE("/:id", userHandler.Delete)
+		}
+
+		posts := v1.Group("/posts")
+		{
+			posts.GET("", postHandler.FindAll)
+			posts.GET("/:id", postHandler.FindById)
+			posts.POST("", postHandler.Create)
+			posts.PUT("/:id", postHandler.Update)
+			posts.DELETE("/:id", postHandler.Delete)
 		}
 
 	}

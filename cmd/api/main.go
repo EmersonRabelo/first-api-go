@@ -33,12 +33,14 @@ func main() {
 	}
 
 	userRepository := repository.NewUserRepository(db)
-
 	userService := service.NewUserService(userRepository)
-
 	userHandler := controller.NewUserHandler(userService)
 
-	r := router.SetupRouter(userHandler)
+	postRepository := repository.NewPostRepository(db)
+	postService := service.NewPostService(postRepository)
+	postHandler := controller.NewPostHandler(postService)
+
+	r := router.SetupRouter(userHandler, postHandler)
 
 	port := setting.GetServer().Port
 
