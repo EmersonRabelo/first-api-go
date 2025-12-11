@@ -148,11 +148,13 @@ func (u *userService) Update(id *uuid.UUID, req *dto.UpdateDTO) (*dto.UserRespon
 		user.Name = req.Name
 	}
 
+	time := time.Now()
+
 	if !req.IsActive {
-		time := time.Now()
-		user.UpdatedAt = &time
+		user.DeletedAt = &time
 	}
 
+	user.UpdatedAt = &time
 	user.IsActive = req.IsActive
 
 	if err := u.repository.Update(user); err != nil {
