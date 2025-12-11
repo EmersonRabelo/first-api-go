@@ -50,6 +50,7 @@ func (handler *UserHandler) Update(context *gin.Context) {
 
 	if err := context.ShouldBindJSON(&req); err != nil {
 		context.JSON(http.StatusBadRequest, errorDTO.ErrorResponse{Error: "Dados inválidos", Details: err.Error()})
+		return
 	}
 
 	user, err := handler.service.Update(&id, &req)
@@ -71,6 +72,7 @@ func (handler *UserHandler) Delete(context *gin.Context) {
 
 	if err := handler.service.Delete(&id); err != nil {
 		context.JSON(http.StatusBadRequest, errorDTO.ErrorResponse{Error: "Erro ao deletar usuário", Details: err.Error()})
+		return
 	}
 
 	context.JSON(http.StatusOK, successDTO.SuccessResponse{Message: "Usuário deletado com sucesso"})
@@ -102,6 +104,7 @@ func (handler *UserHandler) FindById(context *gin.Context) {
 
 	if err != nil {
 		context.JSON(http.StatusNoContent, errorDTO.ErrorResponse{Error: "Erro ocorrido ao buscar o usuário", Details: err.Error()})
+		return
 	}
 
 	context.JSON(http.StatusOK, user)
