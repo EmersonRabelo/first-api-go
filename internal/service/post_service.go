@@ -21,11 +21,11 @@ type PostService interface {
 
 type postService struct {
 	repository  repository.PostRepository
-	userService *userService
+	userService UserService
 }
 
 func (p *postService) Create(req *dto.PostCreateDTO) (*dto.PostResponseDTO, error) {
-	user, err := p.userService.repository.FindById(&req.UserId)
+	user, err := p.userService.FindById(&req.UserId)
 	if err != nil {
 		return nil, errors.New("Usuário não encontrado")
 	}
@@ -33,7 +33,6 @@ func (p *postService) Create(req *dto.PostCreateDTO) (*dto.PostResponseDTO, erro
 	post := &entity.Post{
 		Id:        uuid.New(),
 		UserId:    user.Id,
-		User:      *user,
 		Body:      req.Body,
 		IsActive:  true,
 		CreatedAt: time.Now(),
@@ -147,11 +146,14 @@ func (p *postService) toPostResponse(post *entity.Post) *dto.PostResponseDTO {
 		Body:      post.Body,
 		IsActive:  post.IsActive,
 		CreatedAt: post.CreatedAt,
-		UpdatedAt: *post.UpdatedAt,
-		DeletedAt: *post.DeletedAt,
+		UpdatedAt: post.UpdatedAt,
+		DeletedAt: post.DeletedAt,
 	}
 }
 
-func NewPostService(repository repository.PostRepository) PostService {
-	return &postService{repository: repository}
+func NewPostService(repository repository.PostRepository, userService UserService) PostService {
+	return &postService{
+		repository:  repository,
+		userService: userService,
+	}
 }

@@ -37,7 +37,7 @@ func main() {
 	userHandler := controller.NewUserHandler(userService)
 
 	postRepository := repository.NewPostRepository(db)
-	postService := service.NewPostService(postRepository)
+	postService := service.NewPostService(postRepository, userService)
 	postHandler := controller.NewPostHandler(postService)
 
 	r := router.SetupRouter(userHandler, postHandler)
