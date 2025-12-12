@@ -1,0 +1,16 @@
+meta {
+  name: getAll
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{local}}:{{port}}{{version}}/posts?page=1&page_size=10
+  body: none
+  auth: none
+}
+
+params:query {
+  page: 1
+  page_size: 10
+}

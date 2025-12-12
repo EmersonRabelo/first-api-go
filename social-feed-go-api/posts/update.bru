@@ -1,0 +1,18 @@
+meta {
+  name: update
+  type: http
+  seq: 1
+}
+
+put {
+  url: {{local}}:{{port}}{{version}}/posts/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "body": "",
+    "is_active": ""
+  }
+}
