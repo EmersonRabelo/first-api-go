@@ -56,5 +56,5 @@ func (p *postRepository) Update(post *entity.Post) error {
 }
 
 func (p *postRepository) Delete(id *uuid.UUID) error {
-	return p.db.Delete(p).Error
+	return p.db.Delete(&entity.Post{}, id).Error
 }
