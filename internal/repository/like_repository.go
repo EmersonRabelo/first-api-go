@@ -45,7 +45,7 @@ func (l *likeRepository) FindAll(page int, pageSize int) ([]entity.Like, int64, 
 func (l *likeRepository) FindById(id *uuid.UUID) (*entity.Like, error) {
 	var like entity.Like
 
-	if err := l.db.First(like, id).Error; err != nil {
+	if err := l.db.First(&like, id).Error; err != nil {
 		return nil, err
 	}
 
@@ -57,5 +57,5 @@ func (l *likeRepository) Update(like *entity.Like) error {
 }
 
 func (l *likeRepository) Delete(id *uuid.UUID) error {
-	return l.db.Delete(l).Error
+	return l.db.Delete(&entity.Like{}, id).Error
 }
