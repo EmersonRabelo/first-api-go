@@ -8,10 +8,10 @@ import (
 
 type LikeRepository interface {
 	Create(like *entity.Like) error
-	FindById(id uuid.UUID) (*entity.Like, error)
+	FindById(id *uuid.UUID) (*entity.Like, error)
 	FindAll(page, pageSize int) ([]entity.Like, int64, error)
 	Update(like *entity.Like) error
-	Delete(id uuid.UUID) error
+	Delete(id *uuid.UUID) error
 }
 
 type likeRepository struct {
@@ -42,7 +42,7 @@ func (l *likeRepository) FindAll(page int, pageSize int) ([]entity.Like, int64, 
 
 }
 
-func (l *likeRepository) FindById(id uuid.UUID) (*entity.Like, error) {
+func (l *likeRepository) FindById(id *uuid.UUID) (*entity.Like, error) {
 	var like entity.Like
 
 	if err := l.db.First(like, id).Error; err != nil {
@@ -56,6 +56,6 @@ func (l *likeRepository) Update(like *entity.Like) error {
 	return l.db.Save(like).Error
 }
 
-func (l *likeRepository) Delete(id uuid.UUID) error {
+func (l *likeRepository) Delete(id *uuid.UUID) error {
 	return l.db.Delete(l).Error
 }
