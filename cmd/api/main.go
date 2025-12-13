@@ -40,7 +40,11 @@ func main() {
 	postService := service.NewPostService(postRepository, userService)
 	postHandler := controller.NewPostHandler(postService)
 
-	r := router.SetupRouter(userHandler, postHandler)
+	likeRepository := repository.NewLikeRepository(db)
+	likeService := service.NewLikeService(likeRepository, userService, postService)
+	likeHandler := controller.NewLikeHandler(likeService)
+
+	r := router.SetupRouter(userHandler, postHandler, likeHandler)
 
 	port := setting.GetServer().Port
 
