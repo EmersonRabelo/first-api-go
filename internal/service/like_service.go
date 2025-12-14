@@ -32,7 +32,7 @@ func (l *likeService) Create(req *dto.LikeCreateDTO) (*dto.LikeResponseDTO, erro
 	}
 
 	if _, err := l.postService.FindById(&req.PostId); err != nil {
-		return nil, errors.New("Postagem não econtrada")
+		return nil, errors.New("Postagem não encontrada")
 	}
 
 	like := &entity.Like{
