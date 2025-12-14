@@ -8,10 +8,10 @@ import (
 
 type ReplyRepository interface {
 	Create(reply *entity.Reply) error
-	FindById(id uuid.UUID) (*entity.Reply, error)
+	FindById(id *uuid.UUID) (*entity.Reply, error)
 	FindAll(page, pageSize int) ([]entity.Reply, int64, error)
 	Update(reply *entity.Reply) error
-	Delete(id uuid.UUID) error
+	Delete(id *uuid.UUID) error
 }
 
 type replyRepository struct {
@@ -41,7 +41,7 @@ func (r *replyRepository) FindAll(page int, pageSize int) ([]entity.Reply, int64
 	return replies, amount, nil
 }
 
-func (r *replyRepository) FindById(id uuid.UUID) (*entity.Reply, error) {
+func (r *replyRepository) FindById(id *uuid.UUID) (*entity.Reply, error) {
 	var reply entity.Reply
 
 	if err := r.db.First(&reply, id).Error; err != nil {
@@ -55,6 +55,6 @@ func (r *replyRepository) Update(reply *entity.Reply) error {
 	return r.db.Save(reply).Error
 }
 
-func (r *replyRepository) Delete(id uuid.UUID) error {
+func (r *replyRepository) Delete(id *uuid.UUID) error {
 	return r.db.Delete(r).Error
 }

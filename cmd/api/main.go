@@ -6,11 +6,11 @@ import (
 
 	config "github.com/EmersonRabelo/first-api-go/internal/config"
 	interfaces "github.com/EmersonRabelo/first-api-go/internal/config/interfaces"
-	"github.com/EmersonRabelo/first-api-go/internal/controller"
+	controller "github.com/EmersonRabelo/first-api-go/internal/controller"
 	database "github.com/EmersonRabelo/first-api-go/internal/database"
-	"github.com/EmersonRabelo/first-api-go/internal/repository"
-	"github.com/EmersonRabelo/first-api-go/internal/router"
-	"github.com/EmersonRabelo/first-api-go/internal/service"
+	repository "github.com/EmersonRabelo/first-api-go/internal/repository"
+	router "github.com/EmersonRabelo/first-api-go/internal/router"
+	service "github.com/EmersonRabelo/first-api-go/internal/service"
 )
 
 var setting interfaces.SettingProvider
@@ -44,7 +44,11 @@ func main() {
 	likeService := service.NewLikeService(likeRepository, userService, postService)
 	likeHandler := controller.NewLikeHandler(likeService)
 
-	r := router.SetupRouter(userHandler, postHandler, likeHandler)
+	replyRepository := repository.NewReplyRepository(db)
+	replyService := service.NewReplyService(replyRepository, userService, postService)
+	replyHandler := controller.NewReplyHandler(replyService)
+
+	r := router.SetupRouter(userHandler, postHandler, likeHandler, replyHandler)
 
 	port := setting.GetServer().Port
 
