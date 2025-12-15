@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"time"
+
 	entity "github.com/EmersonRabelo/first-api-go/internal/entity"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -9,7 +11,7 @@ import (
 type PostRepository interface {
 	Create(post *entity.Post) error
 	FindById(id *uuid.UUID) (*entity.Post, error)
-	FindAll(page, pageSize int) ([]entity.Post, int64, error)
+	FindAll(id *uuid.UUID, start, end time.Time, page, pageSize int) ([]entity.Post, int64, error)
 	Update(post *entity.Post) error
 	Delete(id *uuid.UUID) error
 }
@@ -36,19 +38,35 @@ func (p *postRepository) FindById(id *uuid.UUID) (*entity.Post, error) {
 	return &post, nil
 }
 
-func (p *postRepository) FindAll(page int, pageSize int) ([]entity.Post, int64, error) {
+func (p *postRepository) FindAll(id *uuid.UUID, start, end time.Time, page, pageSize int) ([]entity.Post, int64, error) {
 	var posts []entity.Post
-	var amount int64
+	var amount int64 // Total sem filtrar
 
 	p.db.Model(&entity.Post{}).Count(&amount)
 
 	offset := (page - 1) * pageSize
 
-	if err := p.db.Offset(offset).Limit(pageSize).Find(&posts).Error; err != nil {
-		return nil, 0, err
+	db := p.db.Model(&entity.Post{})
+
+	if !start.IsZero() {
+		db = db.Where("created_at >= ?", start)
 	}
 
-	return posts, amount, nil
+	if !end.IsZero() {
+		db = db.Where("created_at <= ?", end)
+	}
+
+	if id != nil {
+		db = db.Where("user_id = ?", id)
+	}
+
+	result := db.Offset(offset).Limit(pageSize).Find(&posts)
+
+	if result.Error != nil {
+		return nil, 0, result.Error
+	}
+
+	return posts, amount, result.Error
 }
 
 func (p *postRepository) Update(post *entity.Post) error {

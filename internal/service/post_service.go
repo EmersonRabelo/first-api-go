@@ -14,7 +14,7 @@ import (
 type PostService interface {
 	Create(post *dto.PostCreateDTO) (*dto.PostResponseDTO, error)
 	FindById(id *uuid.UUID) (*dto.PostResponseDTO, error)
-	FindAll(page, pageSize int) (*dto.PostResponseListDTO, error)
+	FindAll(id *uuid.UUID, start, end time.Time, page, pageSize int) (*dto.PostResponseListDTO, error)
 	Update(id *uuid.UUID, req *dto.PostUpdateDTO) (*dto.PostResponseDTO, error)
 	Delete(id *uuid.UUID) error
 }
@@ -58,7 +58,22 @@ func (p *postService) Delete(id *uuid.UUID) error {
 	return p.repository.Delete(id)
 }
 
-func (p *postService) FindAll(page int, pageSize int) (*dto.PostResponseListDTO, error) {
+func (p *postService) FindById(id *uuid.UUID) (*dto.PostResponseDTO, error) {
+	post, err := p.repository.FindById(id)
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("Post não encontrado")
+		}
+
+		return nil, err
+	}
+
+	return p.toPostResponse(post), err
+}
+
+func (p *postService) FindAll(id *uuid.UUID, start, end time.Time, page, pageSize int) (*dto.PostResponseListDTO, error) {
+
 	if page < 1 {
 		return nil, errors.New("Pagina deve ser maior que 1")
 	}
@@ -67,7 +82,16 @@ func (p *postService) FindAll(page int, pageSize int) (*dto.PostResponseListDTO,
 		return nil, errors.New("Tamanho da página deve ser maior que 1 e menor que 100")
 	}
 
-	posts, total, err := p.repository.FindAll(page, pageSize)
+	if id != nil {
+		if _, err := p.userService.FindById(id); err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, errors.New("Usuário não encontrado")
+			}
+			return nil, err
+		}
+	}
+
+	posts, total, err := p.repository.FindAll(id, start, end, page, pageSize)
 
 	if err != nil {
 		return nil, err
@@ -91,20 +115,6 @@ func (p *postService) FindAll(page int, pageSize int) (*dto.PostResponseListDTO,
 		Page:       page,
 		TotalPages: totalPage,
 	}, nil
-}
-
-func (p *postService) FindById(id *uuid.UUID) (*dto.PostResponseDTO, error) {
-	post, err := p.repository.FindById(id)
-
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("Post não encontrado")
-		}
-
-		return nil, err
-	}
-
-	return p.toPostResponse(post), err
 }
 
 func (p *postService) Update(id *uuid.UUID, req *dto.PostUpdateDTO) (*dto.PostResponseDTO, error) {
