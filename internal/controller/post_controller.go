@@ -109,7 +109,7 @@ func (handler *PostHandler) FindAll(context *gin.Context) {
 	if startParam != "" {
 		t, err := time.Parse("2006-01-02", startParam)
 		if err != nil {
-			context.JSON(400, gin.H{"error": "Data inicial inválida"})
+			context.JSON(http.StatusBadRequest, errorDTO.ErrorResponse{Error: "Data inicial inválida", Details: err.Error()})
 			return
 		}
 		// Adiciona quase 1 dia, mas tira 1 nanosegundo para pegar o último instante do dia
@@ -122,7 +122,7 @@ func (handler *PostHandler) FindAll(context *gin.Context) {
 	if endParam != "" {
 		t, err := time.Parse("2006-01-02", endParam)
 		if err != nil {
-			context.JSON(400, gin.H{"error": "Data final inválida"})
+			context.JSON(http.StatusBadRequest, errorDTO.ErrorResponse{Error: "Data final inválida", Details: err.Error()})
 			return
 		}
 		// Adiciona quase 1 dia, mas tira 1 nanosegundo para pegar o último instante do dia
