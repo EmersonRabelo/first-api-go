@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"time"
+
 	"github.com/EmersonRabelo/first-api-go/internal/entity"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -9,7 +11,7 @@ import (
 type LikeRepository interface {
 	Create(like *entity.Like) error
 	FindById(id *uuid.UUID) (*entity.Like, error)
-	FindAll(page, pageSize int) ([]entity.Like, int64, error)
+	FindAll(postId *uuid.UUID, start, end time.Time, page int, pageSize int) ([]entity.Like, int64, error)
 	Update(like *entity.Like) error
 	Delete(id *uuid.UUID) error
 }
@@ -26,7 +28,7 @@ func (l *likeRepository) Create(like *entity.Like) error {
 	return l.db.Create(like).Error
 }
 
-func (l *likeRepository) FindAll(page int, pageSize int) ([]entity.Like, int64, error) {
+func (l *likeRepository) FindAll(postId *uuid.UUID, start, end time.Time, page int, pageSize int) ([]entity.Like, int64, error) {
 	var likes []entity.Like
 	var amount int64
 
@@ -34,8 +36,24 @@ func (l *likeRepository) FindAll(page int, pageSize int) ([]entity.Like, int64, 
 
 	offset := (page - 1) * pageSize
 
-	if err := l.db.Offset(offset).Limit(pageSize).Find(&likes).Error; err != nil {
-		return nil, 0, err
+	db := l.db.Model(&entity.Like{})
+
+	if !start.IsZero() {
+		db = db.Where("created_at >= ?", start)
+	}
+
+	if !end.IsZero() {
+		db = db.Where("created_at <= ?", end)
+	}
+
+	if postId != nil {
+		db = db.Where("post_id = ?", postId)
+	}
+
+	result := db.Offset(offset).Limit(pageSize).Find(&likes)
+
+	if result.Error != nil {
+		return nil, 0, result.Error
 	}
 
 	return likes, amount, nil

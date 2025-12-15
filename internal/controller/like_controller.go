@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	errorDTO "github.com/EmersonRabelo/first-api-go/internal/dtos/error"
 	likeDTO "github.com/EmersonRabelo/first-api-go/internal/dtos/like"
@@ -58,9 +59,54 @@ func (handler *LikeHandler) FindAll(context *gin.Context) {
 	page, _ := strconv.Atoi(context.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(context.DefaultQuery("page_size", "1"))
 
-	likes, err := handler.service.FindAll(page, pageSize)
+	startParam := context.Query("start")
+	var start time.Time
+
+	if startParam != "" {
+		t, err := time.Parse("2006-01-02", startParam)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, errorDTO.ErrorResponse{Error: "Data inicial inválida", Details: err.Error()})
+			return
+		}
+		// Adiciona quase 1 dia, mas tira 1 nanosegundo para pegar o último instante do dia
+		start = t.AddDate(0, 0, 1).Add(-time.Nanosecond)
+	}
+
+	endParam := context.Query("end")
+	var end time.Time
+
+	if endParam != "" {
+		t, err := time.Parse("2006-01-02", endParam)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, errorDTO.ErrorResponse{Error: "Data final inválida", Details: err.Error()})
+			return
+		}
+		// Adiciona quase 1 dia, mas tira 1 nanosegundo para pegar o último instante do dia
+		end = t.AddDate(0, 0, 1).Add(-time.Nanosecond)
+	}
+
+	var postId *uuid.UUID = nil
+	postIdParam := context.Query("post_id")
+
+	if postIdParam != "" {
+		id, err := uuid.Parse(postIdParam)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, errorDTO.ErrorResponse{
+				Error:   "Id da postagem com formato inválido",
+				Details: err.Error(),
+			})
+			return
+		}
+		postId = &id
+	}
+
+	likes, err := handler.service.FindAll(postId, start, end, page, pageSize)
+
 	if err != nil {
-		context.JSON(http.StatusNoContent, errorDTO.ErrorResponse{Error: "Erro ao buscar a lista de curtidas", Details: err.Error()})
+		context.JSON(http.StatusBadRequest, errorDTO.ErrorResponse{
+			Error:   "Erro ao buscar a lista de curtidas",
+			Details: err.Error(),
+		})
 		return
 	}
 
