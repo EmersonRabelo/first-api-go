@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{local}}:{{port}}{{version}}/likes?page=1&page_size=10
+  url: {{local}}:{{port}}{{version}}/likes?page=1&page_size=10&start=2025-12-11&end=2025-12-15
   body: none
   auth: none
 }
@@ -13,4 +13,7 @@ get {
 params:query {
   page: 1
   page_size: 10
+  start: 2025-12-11
+  end: 2025-12-15
+  ~post_id: 3c2ee0e8-c985-4821-ab31-7a725d43cd3a
 }
