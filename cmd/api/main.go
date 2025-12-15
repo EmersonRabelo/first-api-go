@@ -8,6 +8,7 @@ import (
 	interfaces "github.com/EmersonRabelo/first-api-go/internal/config/interfaces"
 	controller "github.com/EmersonRabelo/first-api-go/internal/controller"
 	database "github.com/EmersonRabelo/first-api-go/internal/database"
+	redis "github.com/EmersonRabelo/first-api-go/internal/redis"
 	repository "github.com/EmersonRabelo/first-api-go/internal/repository"
 	router "github.com/EmersonRabelo/first-api-go/internal/router"
 	service "github.com/EmersonRabelo/first-api-go/internal/service"
@@ -32,6 +33,8 @@ func main() {
 		log.Fatal("Falha ao executar migrations:", err)
 	}
 
+	redisClient := redis.NewClient()
+
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
 	userHandler := controller.NewUserHandler(userService)
@@ -41,7 +44,7 @@ func main() {
 	postHandler := controller.NewPostHandler(postService)
 
 	likeRepository := repository.NewLikeRepository(db)
-	likeService := service.NewLikeService(likeRepository, userService, postService)
+	likeService := service.NewLikeService(likeRepository, userService, postService, redisClient)
 	likeHandler := controller.NewLikeHandler(likeService)
 
 	replyRepository := repository.NewReplyRepository(db)
