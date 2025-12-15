@@ -56,5 +56,5 @@ func (r *replyRepository) Update(reply *entity.Reply) error {
 }
 
 func (r *replyRepository) Delete(id *uuid.UUID) error {
-	return r.db.Delete(r).Error
+	return r.db.Delete(&entity.Reply{}, id).Error
 }
