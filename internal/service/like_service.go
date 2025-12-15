@@ -42,7 +42,7 @@ func (l *likeService) Create(req *dto.LikeCreateDTO) (*dto.LikeResponseDTO, erro
 		return nil, errors.New("Postagem não encontrada")
 	}
 
-	quantity, err := l.incrementLike(&req.UserId)
+	quantity, err := l.incrementLike(&req.PostId)
 
 	if err != nil {
 		// TODO: fazer a busca no banco pela ultima inserção de um like no determinado post para saber a quantidade de curtidas
