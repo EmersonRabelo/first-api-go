@@ -39,6 +39,7 @@ func (r *replyService) Create(req *dto.ReplyCreateDTO) (*dto.ReplyResponseDTO, e
 		Id:        uuid.New(),
 		UserId:    req.UserId,
 		PostId:    req.PostId,
+		Body:      req.Body,
 		Quantity:  0,
 		CreatedAt: time.Now(),
 		UpdatedAt: nil,
@@ -125,7 +126,7 @@ func (r *replyService) Update(id *uuid.UUID, req *dto.ReplyUpdateDTO) (*dto.Repl
 	}
 
 	if req.Body != "" {
-		reply.Body = reply.Body
+		reply.Body = req.Body
 	}
 
 	time := time.Now()
