@@ -66,7 +66,7 @@ func (p *postRepository) FindAll(id *uuid.UUID, start, end time.Time, page, page
 		return nil, 0, result.Error
 	}
 
-	return posts, amount, result.Error
+	return posts, amount, nil
 }
 
 func (p *postRepository) Update(post *entity.Post) error {
