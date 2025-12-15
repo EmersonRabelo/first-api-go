@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS users (
-    user_id uuid PRIMARY KEY,
+    user_id uuid PRIMARY KEY NOT NULL,
     user_name VARCHAR(50) UNIQUE NOT NULL,
     user_email VARCHAR(255) UNIQUE NOT NULL,
     is_active boolean NOT NULL DEFAULT TRUE,

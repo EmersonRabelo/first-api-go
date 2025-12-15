@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS likes (
-    like_id uuid PRIMARY KEY,
+    like_id uuid PRIMARY KEY NOT NULL,
     user_id uuid NOT NULL,
     post_id uuid NOT NULL,
     quantity BIGINT NOT NULL,

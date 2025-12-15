@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS replies (
-    reply_id uuid PRIMARY KEY,
+    reply_id uuid PRIMARY KEY NOT NULL,
     reply_body VARCHAR(280),
     user_id uuid NOT NULL,
     post_id uuid NOT NULL,

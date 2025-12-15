@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS posts (
-    post_id uuid PRIMARY KEY,
+    post_id uuid PRIMARY KEY NOT NULL,
     user_id uuid NOT NULL,
     post_body VARCHAR(280),
     is_active boolean NOT NULL DEFAULT TRUE,
