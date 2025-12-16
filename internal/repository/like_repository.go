@@ -12,6 +12,7 @@ type LikeRepository interface {
 	Create(like *entity.Like) error
 	FindById(id *uuid.UUID) (*entity.Like, error)
 	FindAll(postId *uuid.UUID, start, end time.Time, page int, pageSize int) ([]entity.Like, int64, error)
+	GetLikesCountByPostID(postID *uuid.UUID) (uint64, error)
 	Update(like *entity.Like) error
 	Delete(id *uuid.UUID) error
 }
@@ -76,4 +77,12 @@ func (l *likeRepository) Update(like *entity.Like) error {
 
 func (l *likeRepository) Delete(id *uuid.UUID) error {
 	return l.db.Delete(&entity.Like{}, id).Error
+}
+
+func (l *likeRepository) GetLikesCountByPostID(postID *uuid.UUID) (uint64, error) {
+	var like entity.Like
+	if err := l.db.Where("post_id = ?", postID).Last(&like).Error; err != nil {
+		return 0, err
+	}
+	return like.Quantity, nil
 }

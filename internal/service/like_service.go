@@ -23,6 +23,7 @@ type LikeService interface {
 	Delete(id *uuid.UUID) error
 	incrementLike(id *uuid.UUID) (uint64, error)
 	decrementLike(id *uuid.UUID) (uint64, error)
+	setLike(id *uuid.UUID, value uint64) error
 }
 
 type likeService struct {
@@ -45,7 +46,17 @@ func (l *likeService) Create(req *dto.LikeCreateDTO) (*dto.LikeResponseDTO, erro
 	quantity, err := l.incrementLike(&req.PostId)
 
 	if err != nil {
-		// TODO: fazer a busca no banco pela ultima inserção de um like no determinado post para saber a quantidade de curtidas
+		likesQuantity, err := l.repository.GetLikesCountByPostID(&req.PostId)
+
+		if err != nil {
+			return nil, err
+		}
+
+		quantity = likesQuantity
+		if err := l.setLike(&req.PostId, likesQuantity); err != nil {
+			fmt.Println("Não foi possivel sincronizar o redis, ", err)
+		}
+
 	}
 
 	like := &entity.Like{
@@ -162,6 +173,14 @@ func (l *likeService) incrementLike(id *uuid.UUID) (uint64, error) {
 		return 0, fmt.Errorf("contador negativo: %d", count)
 	}
 	return uint64(count), nil
+}
+
+func (l *likeService) setLike(id *uuid.UUID, value uint64) error {
+	if err := redisService.SetCounter(l.redisClient, "like:post", id.String(), value); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (l *likeService) decrementLike(id *uuid.UUID) (uint64, error) {
