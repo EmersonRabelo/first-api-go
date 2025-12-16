@@ -9,6 +9,7 @@ import (
 	"github.com/EmersonRabelo/first-api-go/internal/entity"
 	redisService "github.com/EmersonRabelo/first-api-go/internal/redis"
 	"github.com/go-redis/redis/v8"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/EmersonRabelo/first-api-go/internal/repository"
 	"github.com/google/uuid"
@@ -70,6 +71,10 @@ func (l *likeService) Create(req *dto.LikeCreateDTO) (*dto.LikeResponseDTO, erro
 	}
 
 	if err := l.repository.Create(like); err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return nil, errors.New("Usuário já curtiu essa postagem")
+		}
 		return nil, err
 	}
 
