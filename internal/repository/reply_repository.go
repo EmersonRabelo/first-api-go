@@ -11,7 +11,7 @@ import (
 type ReplyRepository interface {
 	Create(reply *entity.Reply) error
 	FindById(id *uuid.UUID) (*entity.Reply, error)
-	FindAll(postId *uuid.UUID, start, end time.Time, page int, pageSize int) ([]entity.Reply, int64, error)
+	FindAll(postID, userID *uuid.UUID, start, end time.Time, page int, pageSize int) ([]entity.Reply, int64, error)
 	GetLikesCountByPostID(postID *uuid.UUID) (uint64, error)
 	Update(reply *entity.Reply) error
 	Delete(id *uuid.UUID) error
@@ -29,7 +29,7 @@ func (r *replyRepository) Create(reply *entity.Reply) error {
 	return r.db.Create(reply).Error
 }
 
-func (l *replyRepository) FindAll(postId *uuid.UUID, start, end time.Time, page int, pageSize int) ([]entity.Reply, int64, error) {
+func (l *replyRepository) FindAll(postID, userID *uuid.UUID, start, end time.Time, page int, pageSize int) ([]entity.Reply, int64, error) {
 	var replies []entity.Reply
 	var amount int64
 
@@ -47,8 +47,12 @@ func (l *replyRepository) FindAll(postId *uuid.UUID, start, end time.Time, page 
 		db = db.Where("created_at <= ?", end)
 	}
 
-	if postId != nil {
-		db = db.Where("post_id = ?", postId)
+	if postID != nil {
+		db = db.Where("post_id = ?", postID)
+	}
+
+	if userID != nil {
+		db = db.Where("user_id = ?", userID)
 	}
 
 	result := db.Offset(offset).Limit(pageSize).Find(&replies)

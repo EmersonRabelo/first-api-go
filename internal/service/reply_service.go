@@ -17,7 +17,7 @@ import (
 type ReplyService interface {
 	Create(reply *dto.ReplyCreateDTO) (*dto.ReplyResponseDTO, error)
 	FindById(id *uuid.UUID) (*dto.ReplyResponseDTO, error)
-	FindAll(postId *uuid.UUID, start, end time.Time, page int, pageSize int) (*dto.ReplyResponseListDTO, error)
+	FindAll(postID, userID *uuid.UUID, start, end time.Time, page int, pageSize int) (*dto.ReplyResponseListDTO, error)
 	Update(id *uuid.UUID, req *dto.ReplyUpdateDTO) (*dto.ReplyResponseDTO, error)
 	Delete(id *uuid.UUID) error
 	incrementLike(id *uuid.UUID) (uint64, error)
@@ -86,7 +86,7 @@ func (r *replyService) Delete(id *uuid.UUID) error {
 	return r.repository.Delete(id)
 }
 
-func (r *replyService) FindAll(postId *uuid.UUID, start, end time.Time, page int, pageSize int) (*dto.ReplyResponseListDTO, error) {
+func (r *replyService) FindAll(postID, userID *uuid.UUID, start, end time.Time, page int, pageSize int) (*dto.ReplyResponseListDTO, error) {
 	if page < 1 {
 		return nil, errors.New("Pagina deve ser maior que 1")
 	}
@@ -95,8 +95,8 @@ func (r *replyService) FindAll(postId *uuid.UUID, start, end time.Time, page int
 		return nil, errors.New("Tamanho da página deve ser maior que 1 e menor que 100")
 	}
 
-	if postId != nil {
-		if _, err := r.postService.FindById(postId); err != nil {
+	if postID != nil {
+		if _, err := r.postService.FindById(postID); err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return nil, errors.New("Postagem não encontrada")
 			}
@@ -104,7 +104,16 @@ func (r *replyService) FindAll(postId *uuid.UUID, start, end time.Time, page int
 		}
 	}
 
-	replies, total, err := r.repository.FindAll(postId, start, end, page, pageSize)
+	if userID != nil {
+		if _, err := r.userService.FindById(userID); err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, errors.New("Usuário não encontrado")
+			}
+			return nil, err
+		}
+	}
+
+	replies, total, err := r.repository.FindAll(postID, userID, start, end, page, pageSize)
 
 	if err != nil {
 		return nil, err

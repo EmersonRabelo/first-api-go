@@ -110,7 +110,7 @@ func (handler *ReplyHandler) FindAll(context *gin.Context) {
 		end = t.AddDate(0, 0, 1).Add(-time.Nanosecond)
 	}
 
-	var postId *uuid.UUID = nil
+	var postID *uuid.UUID = nil
 	postIdParam := context.Query("post_id")
 
 	if postIdParam != "" {
@@ -122,10 +122,25 @@ func (handler *ReplyHandler) FindAll(context *gin.Context) {
 			})
 			return
 		}
-		postId = &id
+		postID = &id
 	}
 
-	likes, err := handler.service.FindAll(postId, start, end, page, pageSize)
+	var userID *uuid.UUID = nil
+	userIDParam := context.Query("user_id")
+
+	if userIDParam != "" {
+		id, err := uuid.Parse(userIDParam)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, errorDTO.ErrorResponse{
+				Error:   "Id do usuário com formato inválido",
+				Details: err.Error(),
+			})
+			return
+		}
+		userID = &id
+	}
+
+	likes, err := handler.service.FindAll(postID, userID, start, end, page, pageSize)
 
 	if err != nil {
 		context.JSON(http.StatusNoContent, errorDTO.ErrorResponse{Error: "Erro ao buscar a lista de comentários", Details: err.Error()})
