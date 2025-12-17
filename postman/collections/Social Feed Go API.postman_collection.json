@@ -1,0 +1,735 @@
+{
+  "info": {
+    "_postman_id": "2392a3ca-801b-41f6-aec1-5007396f026f",
+    "name": "Social Feed Go API",
+    "description": "A RESTful API for a social feed application built with Go and Gin framework. This API provides endpoints for managing users, posts, likes, and replies.\n\n## Base URL\n`http://localhost:8080/api/v1`\n\n## Resources\n- **Users**: Create, read, update, and delete user accounts\n- **Posts**: Manage social feed posts (max 280 characters)\n- **Likes**: Like/unlike posts\n- **Replies**: Reply to posts (max 280 characters)\n\n## Authentication\nNo authentication required for this API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "id": "b33c8204-5bf5-4ca5-8de5-e89cfe01b001",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/health",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Check if the API server is running and healthy."
+          },
+          "response": []
+        }
+      ],
+      "id": "7ecd13cf-20d4-4345-b677-e7ef481f5b02",
+      "description": "Health check endpoints for monitoring API status."
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get All Users",
+          "id": "0aa500e4-52b1-4860-a00c-19561a292854",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/users?page=1&page_size=10",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "page_size",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Retrieve a list of all users in the system."
+          },
+          "response": []
+        },
+        {
+          "name": "Get User by ID",
+          "id": "7413ffab-f77c-4275-8134-76a71c0f1ac3",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/users/:id",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "c4f916d9-3a62-4792-abd8-b7b487470b39",
+                  "description": "User UUID"
+                }
+              ]
+            },
+            "description": "Retrieve a specific user by their unique identifier."
+          },
+          "response": []
+        },
+        {
+          "name": "Create User",
+          "id": "10da2ad4-4dea-4656-8781-080c9f0791b4",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Due\",\n  \"email\": \"johndue2025@email.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/users",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "users"
+              ]
+            },
+            "description": "Create a new user account.\n\n**Required fields:**\n- `name` (string, 3-50 characters): User's display name\n- `email` (string, valid email format): User's email address"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "id": "716def99-c21d-4b45-af4d-2eddb7fd3c62",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"luc4as_d3v\",\n    \"email\": \"dev_lucas@email.com\",\n    \"is_active\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/users/:id",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "0f32acfd-0b82-4cee-8f18-3544ea385553",
+                  "description": "User UUID"
+                }
+              ]
+            },
+            "description": "Update an existing user's information.\n\n**Optional fields:**\n- `name` (string, 3-50 characters): User's display name\n- `email` (string, valid email format): User's email address\n- `is_active` (boolean): User's active status"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "id": "56794e22-fcd6-4e1d-bb00-01f7ed209aca",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/users/:id",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "c4f916d9-3a62-4792-abd8-b7b487470b39",
+                  "description": "User UUID"
+                }
+              ]
+            },
+            "description": "Delete a user by their unique identifier."
+          },
+          "response": []
+        }
+      ],
+      "id": "5df802f0-340a-4c7b-b069-98310b623b2a",
+      "description": "Endpoints for managing user accounts. Users are the core entity that can create posts, likes, and replies."
+    },
+    {
+      "name": "Posts",
+      "item": [
+        {
+          "name": "Get All Posts",
+          "id": "4e1d52be-dbe0-4998-8537-d9bbbdee0022",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/posts?page=1&page_size=10&start=2025-12-11&end=2025-12-18&user_id=55fc48ba-56d3-4e59-b49d-d1e93341258f",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "posts"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "uuid": "fa2cb8fd-3991-47d9-a4fc-022fc6fcdbe9"
+                },
+                {
+                  "key": "page_size",
+                  "value": "10",
+                  "uuid": "3eff8522-ab60-4463-bcc7-6b5eae43d6f0"
+                },
+                {
+                  "key": "start",
+                  "value": "2025-12-11",
+                  "uuid": "7bb58922-6fb9-40a1-b80f-b3612cabf2a7"
+                },
+                {
+                  "key": "end",
+                  "value": "2025-12-18",
+                  "uuid": "b8007ab0-e530-4ea2-9568-fada3d1c6e07"
+                },
+                {
+                  "key": "user_id",
+                  "value": "55fc48ba-56d3-4e59-b49d-d1e93341258f",
+                  "type": "text",
+                  "uuid": "77000240-8c83-4dbe-884f-4e10f4fb6a53"
+                }
+              ]
+            },
+            "description": "Retrieve a list of all posts in the social feed."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Post by ID",
+          "id": "5ffc4294-40ac-4758-bb06-7db0928b922d",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/posts/:id",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "posts",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "db5cc68d-9339-4ede-b29b-1d9e4986e931",
+                  "description": "Post UUID"
+                }
+              ]
+            },
+            "description": "Retrieve a specific post by its unique identifier."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Post",
+          "id": "d4a15ed3-262e-4d56-86d5-56877cbdad31",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"01890f54-d4aa-7b4a-a102-acae7b6a89e8\",\n  \"body\": \"Hello, this is my first post!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/posts",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "posts"
+              ]
+            },
+            "description": "Create a new post in the social feed.\n\n**Required fields:**\n- `user_id` (UUID): The ID of the user creating the post\n- `body` (string, max 280 characters): The content of the post"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Post",
+          "id": "660a3adb-2a30-4840-8e31-ebbacf9ff57b",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": \"Updated post content!\",\n  \"is_active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/posts/:id",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "posts",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "db5cc68d-9339-4ede-b29b-1d9e4986e931",
+                  "description": "Post UUID"
+                }
+              ]
+            },
+            "description": "Update an existing post.\n\n**Optional fields:**\n- `body` (string): Updated post content\n- `is_active` (boolean): Post's active status"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Post",
+          "id": "371bc98e-e6fd-4cad-8da7-6e9ef465da55",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/posts/:id",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "posts",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "db5cc68d-9339-4ede-b29b-1d9e4986e931",
+                  "description": "Post UUID"
+                }
+              ]
+            },
+            "description": "Delete a post by its unique identifier."
+          },
+          "response": []
+        }
+      ],
+      "id": "7fff788b-b290-43d4-9fac-720a64243e22",
+      "description": "Endpoints for managing posts in the social feed. Posts are limited to 280 characters and belong to a user."
+    },
+    {
+      "name": "Likes",
+      "item": [
+        {
+          "name": "Get All Likes",
+          "id": "e3ff1a54-45bf-4e73-9937-48779e20f4b8",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/likes?page=1&page_size=10&start=2025-12-11&end=2025-12-18&post_id=db5cc68d-9339-4ede-b29b-1d9e4986e931",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "likes"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "uuid": "35571b07-2222-4b13-b180-fe5774438a4a"
+                },
+                {
+                  "key": "page_size",
+                  "value": "10",
+                  "uuid": "4cac8e28-f379-401f-bd64-d2624ccecd07"
+                },
+                {
+                  "key": "start",
+                  "value": "2025-12-11",
+                  "uuid": "81da730b-5696-4ab0-b939-9d6463578ef2"
+                },
+                {
+                  "key": "end",
+                  "value": "2025-12-18",
+                  "uuid": "58349d98-cd93-4e69-a802-93297632edb4"
+                },
+                {
+                  "key": "post_id",
+                  "value": "db5cc68d-9339-4ede-b29b-1d9e4986e931",
+                  "uuid": "84c0ae50-ce21-4ecc-9679-9821ab5c985d"
+                }
+              ]
+            },
+            "description": "Retrieve a list of all likes."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Like by ID",
+          "id": "42219edc-28a7-4a3a-ac48-bc58386406b6",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/likes/:id",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "likes",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "52ee613c-f525-4c44-80e2-ce9401e17f1c",
+                  "description": "Like UUID"
+                }
+              ]
+            },
+            "description": "Retrieve a specific like by its unique identifier."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Like",
+          "id": "c88c9f08-9720-498f-bdde-ec624020686b",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"01890f54-d4aa-7b4a-a102-acae7b6a89e8\",\n  \"post_id\": \"02890f54-d4aa-7b4a-a102-acae7b6a89e8\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/likes",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "likes"
+              ]
+            },
+            "description": "Create a new like on a post.\n\n**Required fields:**\n- `user_id` (UUID): The ID of the user creating the like\n- `post_id` (UUID): The ID of the post being liked\n- `quantity` (integer): The number of likes"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Like",
+          "id": "35090597-a73e-4fc3-bb16-a00d3fb80113",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/likes/:id",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "likes",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "52ee613c-f525-4c44-80e2-ce9401e17f1c",
+                  "description": "Like UUID"
+                }
+              ]
+            },
+            "description": "Delete a like by its unique identifier (unlike a post)."
+          },
+          "response": []
+        }
+      ],
+      "id": "2ea59114-d94e-45cf-95ed-472175a2a27b",
+      "description": "Endpoints for managing likes on posts. Likes track user engagement with posts."
+    },
+    {
+      "name": "Replies",
+      "item": [
+        {
+          "name": "Get All Replies",
+          "id": "ba989d18-5020-44da-91ae-9adee18a1c38",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/replies?page=1&page_size=10&start=2025-12-11&end=2025-12-18&post_id=8fa5a84e-98a4-4ba6-aacd-9aefef9ae5e0",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "replies"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "page_size",
+                  "value": "10"
+                },
+                {
+                  "key": "start",
+                  "value": "2025-12-11"
+                },
+                {
+                  "key": "end",
+                  "value": "2025-12-18"
+                },
+                {
+                  "key": "post_id",
+                  "value": "8fa5a84e-98a4-4ba6-aacd-9aefef9ae5e0"
+                }
+              ]
+            },
+            "description": "Retrieve a list of all replies."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Reply by ID",
+          "id": "43f3277a-303c-462e-9552-00cd1fe9140d",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/replies/:id",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "replies",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1718d436-5f6e-40bf-8746-1fd675e9b0a0",
+                  "description": "Reply UUID"
+                }
+              ]
+            },
+            "description": "Retrieve a specific reply by its unique identifier."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Reply",
+          "id": "67c7c721-85d2-4d2d-be6f-2a7b2956a748",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"01890f54-d4aa-7b4a-a102-acae7b6a89e8\",\n  \"post_id\": \"02890f54-d4aa-7b4a-a102-acae7b6a89e8\",\n  \"body\": \"Great post!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/replies",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "replies"
+              ]
+            },
+            "description": "Create a new reply to a post.\n\n**Required fields:**\n- `user_id` (UUID): The ID of the user creating the reply\n- `post_id` (UUID): The ID of the post being replied to\n- `body` (string, max 280 characters): The content of the reply"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Reply",
+          "id": "697da703-4f18-4814-b65e-707f426465fa",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": \"Updated reply content!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/replies/:id",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "replies",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1718d436-5f6e-40bf-8746-1fd675e9b0a0",
+                  "description": "Reply UUID"
+                }
+              ]
+            },
+            "description": "Update an existing reply.\n\n**Optional fields:**\n- `body` (string): Updated reply content"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Reply",
+          "id": "eccf9369-bb6c-4ac6-bc5a-f57b9436703f",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/replies/:id",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "replies",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1718d436-5f6e-40bf-8746-1fd675e9b0a0",
+                  "description": "Reply UUID"
+                }
+              ]
+            },
+            "description": "Delete a reply by its unique identifier."
+          },
+          "response": []
+        }
+      ],
+      "id": "ea2f96c3-1b54-4111-868e-71f1c411550d",
+      "description": "Endpoints for managing replies to posts. Replies are limited to 280 characters and belong to both a user and a post."
+    }
+  ],
+  "variable": [
+    {
+      "id": "49f5839e-60a2-4ded-b7db-4a9fc8d7d893",
+      "key": "host",
+      "value": "http://localhost:8080/api/v1"
+    },
+    {
+      "id": "12de0869-56ac-45a6-804c-1ceff251d1f5",
+      "key": "port",
+      "value": ""
+    },
+    {
+      "id": "f3e2cb14-b76b-45bc-a9f3-e197ab767885",
+      "key": "version",
+      "value": ""
+    }
+  ]
+}
