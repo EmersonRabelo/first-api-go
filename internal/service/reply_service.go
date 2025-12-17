@@ -64,8 +64,6 @@ func (r *replyService) Create(req *dto.ReplyCreateDTO) (*dto.ReplyResponseDTO, e
 		Body:      req.Body,
 		Quantity:  quantity,
 		CreatedAt: time.Now(),
-		UpdatedAt: nil,
-		DeletedAt: nil,
 	}
 
 	if err := r.repository.Create(reply); err != nil {
@@ -171,7 +169,7 @@ func (r *replyService) Update(id *uuid.UUID, req *dto.ReplyUpdateDTO) (*dto.Repl
 
 	time := time.Now()
 
-	reply.UpdatedAt = &time
+	reply.UpdatedAt = time
 
 	if err := r.repository.Update(reply); err != nil {
 		return nil, err
@@ -181,6 +179,15 @@ func (r *replyService) Update(id *uuid.UUID, req *dto.ReplyUpdateDTO) (*dto.Repl
 }
 
 func (r *replyService) toReplyResponse(reply *entity.Reply) *dto.ReplyResponseDTO {
+	var deletedAt *time.Time
+	if reply.DeletedAt.Valid {
+		deletedAt = &reply.DeletedAt.Time
+	}
+
+	var updatedAt *time.Time
+	if !reply.UpdatedAt.IsZero() {
+		updatedAt = &reply.UpdatedAt
+	}
 	return &dto.ReplyResponseDTO{
 		Id:        reply.Id,
 		UserId:    reply.UserId,
@@ -188,8 +195,8 @@ func (r *replyService) toReplyResponse(reply *entity.Reply) *dto.ReplyResponseDT
 		Body:      reply.Body,
 		Quantity:  reply.Quantity,
 		CreatedAt: reply.CreatedAt,
-		UpdatedAt: reply.UpdatedAt,
-		DeletedAt: reply.DeletedAt,
+		UpdatedAt: updatedAt,
+		DeletedAt: deletedAt,
 	}
 }
 
