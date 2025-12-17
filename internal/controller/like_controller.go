@@ -124,7 +124,7 @@ func (handler *LikeHandler) FindById(context *gin.Context) {
 	like, err := handler.service.FindById(&id)
 
 	if err != nil {
-		context.JSON(http.StatusNoContent, errorDTO.ErrorResponse{Error: "Erro ocorrido ao buscar o like", Details: err.Error()})
+		context.JSON(http.StatusBadRequest, errorDTO.ErrorResponse{Error: "Erro ocorrido ao buscar o like", Details: err.Error()})
 		return
 	}
 
