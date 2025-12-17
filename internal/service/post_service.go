@@ -36,8 +36,6 @@ func (p *postService) Create(req *dto.PostCreateDTO) (*dto.PostResponseDTO, erro
 		Body:      req.Body,
 		IsActive:  true,
 		CreatedAt: time.Now(),
-		UpdatedAt: nil,
-		DeletedAt: nil,
 	}
 
 	if err := p.repository.Create(post); err != nil {
@@ -132,13 +130,13 @@ func (p *postService) Update(id *uuid.UUID, req *dto.PostUpdateDTO) (*dto.PostRe
 		post.Body = req.Body
 	}
 
-	time := time.Now()
+	now := time.Now()
 
 	if !req.IsActive {
-		post.DeletedAt = &time
+		post.DeletedAt.Time = now
 	}
 
-	post.UpdatedAt = &time
+	post.UpdatedAt = now
 	post.IsActive = req.IsActive
 
 	if err := p.repository.Update(post); err != nil {
@@ -150,14 +148,23 @@ func (p *postService) Update(id *uuid.UUID, req *dto.PostUpdateDTO) (*dto.PostRe
 }
 
 func (p *postService) toPostResponse(post *entity.Post) *dto.PostResponseDTO {
+	var deletedAt *time.Time
+	if post.DeletedAt.Valid {
+		deletedAt = &post.DeletedAt.Time
+	}
+
+	var updatedAt *time.Time
+	if !post.UpdatedAt.IsZero() {
+		updatedAt = &post.UpdatedAt
+	}
 	return &dto.PostResponseDTO{
 		Id:        post.Id,
 		UserId:    post.UserId,
 		Body:      post.Body,
 		IsActive:  post.IsActive,
 		CreatedAt: post.CreatedAt,
-		UpdatedAt: post.UpdatedAt,
-		DeletedAt: post.DeletedAt,
+		UpdatedAt: updatedAt,
+		DeletedAt: deletedAt,
 	}
 }
 
