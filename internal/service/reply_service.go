@@ -2,11 +2,14 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	dto "github.com/EmersonRabelo/first-api-go/internal/dtos/reply"
 	"github.com/EmersonRabelo/first-api-go/internal/entity"
+	redisService "github.com/EmersonRabelo/first-api-go/internal/redis"
 	"github.com/EmersonRabelo/first-api-go/internal/repository"
+	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -17,12 +20,16 @@ type ReplyService interface {
 	FindAll(postId *uuid.UUID, start, end time.Time, page int, pageSize int) (*dto.ReplyResponseListDTO, error)
 	Update(id *uuid.UUID, req *dto.ReplyUpdateDTO) (*dto.ReplyResponseDTO, error)
 	Delete(id *uuid.UUID) error
+	incrementLike(id *uuid.UUID) (uint64, error)
+	decrementLike(id *uuid.UUID) (uint64, error)
+	setLike(id *uuid.UUID, value uint64) error
 }
 
 type replyService struct {
 	repository  repository.ReplyRepository
 	userService UserService
 	postService PostService
+	redisClient *redis.Client
 }
 
 func (r *replyService) Create(req *dto.ReplyCreateDTO) (*dto.ReplyResponseDTO, error) {
@@ -35,12 +42,27 @@ func (r *replyService) Create(req *dto.ReplyCreateDTO) (*dto.ReplyResponseDTO, e
 		return nil, errors.New("Postagem não encontrada")
 	}
 
+	quantity, err := r.incrementLike(&req.PostId)
+
+	if err != nil {
+		likesQuantity, err := r.repository.GetLikesCountByPostID(&req.PostId)
+
+		if err != nil {
+			return nil, err
+		}
+
+		quantity = likesQuantity
+		if err := r.setLike(&req.PostId, likesQuantity); err != nil {
+			fmt.Println("Não foi possivel sincronizar o redis, ", err)
+		}
+	}
+
 	reply := &entity.Reply{
 		Id:        uuid.New(),
 		UserId:    req.UserId,
 		PostId:    req.PostId,
 		Body:      req.Body,
-		Quantity:  0,
+		Quantity:  quantity,
 		CreatedAt: time.Now(),
 		UpdatedAt: nil,
 		DeletedAt: nil,
@@ -162,10 +184,43 @@ func (r *replyService) toReplyResponse(reply *entity.Reply) *dto.ReplyResponseDT
 	}
 }
 
-func NewReplyService(repository repository.ReplyRepository, userService UserService, postService PostService) ReplyService {
+func (l *replyService) incrementLike(id *uuid.UUID) (uint64, error) {
+	count, err := redisService.IncrementCounter(l.redisClient, "reply:post", id.String())
+	if err != nil {
+		return 0, err
+	}
+	if count < 0 {
+		// retorno erro caso o contador esteja negativo, para evitar overflow.
+		return 0, fmt.Errorf("contador negativo: %d", count)
+	}
+	return uint64(count), nil
+}
+
+func (l *replyService) setLike(id *uuid.UUID, value uint64) error {
+	if err := redisService.SetCounter(l.redisClient, "like:post", id.String(), value); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (l *replyService) decrementLike(id *uuid.UUID) (uint64, error) {
+	count, err := redisService.DecrementCounter(l.redisClient, "reply:post", id.String())
+	if err != nil {
+		return 0, err
+	}
+	if count < 0 {
+		// retorno erro caso o contador esteja negativo, para evitar overflow.
+		return 0, fmt.Errorf("contador negativo: %d", count)
+	}
+	return uint64(count), nil
+}
+
+func NewReplyService(repository repository.ReplyRepository, userService UserService, postService PostService, redisClient *redis.Client) ReplyService {
 	return &replyService{
 		repository:  repository,
 		userService: userService,
 		postService: postService,
+		redisClient: redisClient,
 	}
 }

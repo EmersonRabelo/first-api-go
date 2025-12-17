@@ -48,7 +48,7 @@ func main() {
 	likeHandler := controller.NewLikeHandler(likeService)
 
 	replyRepository := repository.NewReplyRepository(db)
-	replyService := service.NewReplyService(replyRepository, userService, postService)
+	replyService := service.NewReplyService(replyRepository, userService, postService, redisClient)
 	replyHandler := controller.NewReplyHandler(replyService)
 
 	r := router.SetupRouter(userHandler, postHandler, likeHandler, replyHandler)
