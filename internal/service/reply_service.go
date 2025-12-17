@@ -14,7 +14,7 @@ import (
 type ReplyService interface {
 	Create(reply *dto.ReplyCreateDTO) (*dto.ReplyResponseDTO, error)
 	FindById(id *uuid.UUID) (*dto.ReplyResponseDTO, error)
-	FindAll(page, pageSize int) (*dto.ReplyResponseListDTO, error)
+	FindAll(postId *uuid.UUID, start, end time.Time, page int, pageSize int) (*dto.ReplyResponseListDTO, error)
 	Update(id *uuid.UUID, req *dto.ReplyUpdateDTO) (*dto.ReplyResponseDTO, error)
 	Delete(id *uuid.UUID) error
 }
@@ -64,7 +64,7 @@ func (r *replyService) Delete(id *uuid.UUID) error {
 	return r.repository.Delete(id)
 }
 
-func (r *replyService) FindAll(page int, pageSize int) (*dto.ReplyResponseListDTO, error) {
+func (r *replyService) FindAll(postId *uuid.UUID, start, end time.Time, page int, pageSize int) (*dto.ReplyResponseListDTO, error) {
 	if page < 1 {
 		return nil, errors.New("Pagina deve ser maior que 1")
 	}
@@ -73,7 +73,16 @@ func (r *replyService) FindAll(page int, pageSize int) (*dto.ReplyResponseListDT
 		return nil, errors.New("Tamanho da página deve ser maior que 1 e menor que 100")
 	}
 
-	replies, total, err := r.repository.FindAll(page, pageSize)
+	if postId != nil {
+		if _, err := r.postService.FindById(postId); err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, errors.New("Postagem não encontrada")
+			}
+			return nil, err
+		}
+	}
+
+	replies, total, err := r.repository.FindAll(postId, start, end, page, pageSize)
 
 	if err != nil {
 		return nil, err

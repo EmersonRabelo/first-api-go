@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"time"
+
 	"github.com/EmersonRabelo/first-api-go/internal/entity"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -9,7 +11,7 @@ import (
 type ReplyRepository interface {
 	Create(reply *entity.Reply) error
 	FindById(id *uuid.UUID) (*entity.Reply, error)
-	FindAll(page, pageSize int) ([]entity.Reply, int64, error)
+	FindAll(postId *uuid.UUID, start, end time.Time, page int, pageSize int) ([]entity.Reply, int64, error)
 	Update(reply *entity.Reply) error
 	Delete(id *uuid.UUID) error
 }
@@ -26,16 +28,32 @@ func (r *replyRepository) Create(reply *entity.Reply) error {
 	return r.db.Create(reply).Error
 }
 
-func (r *replyRepository) FindAll(page int, pageSize int) ([]entity.Reply, int64, error) {
+func (l *replyRepository) FindAll(postId *uuid.UUID, start, end time.Time, page int, pageSize int) ([]entity.Reply, int64, error) {
 	var replies []entity.Reply
 	var amount int64
 
-	r.db.Model(&entity.Reply{}).Count(&amount)
+	l.db.Model(&entity.Reply{}).Count(&amount)
 
 	offset := (page - 1) * pageSize
 
-	if err := r.db.Offset(offset).Limit(pageSize).Find(&replies).Error; err != nil {
-		return nil, 0, err
+	db := l.db.Model(&entity.Reply{})
+
+	if !start.IsZero() {
+		db = db.Where("created_at >= ?", start)
+	}
+
+	if !end.IsZero() {
+		db = db.Where("created_at <= ?", end)
+	}
+
+	if postId != nil {
+		db = db.Where("post_id = ?", postId)
+	}
+
+	result := db.Offset(offset).Limit(pageSize).Find(&replies)
+
+	if result.Error != nil {
+		return nil, 0, result.Error
 	}
 
 	return replies, amount, nil
