@@ -66,8 +66,6 @@ func (l *likeService) Create(req *dto.LikeCreateDTO) (*dto.LikeResponseDTO, erro
 		PostId:    req.PostId,
 		Quantity:  quantity,
 		CreatedAt: time.Now(),
-		UpdatedAt: nil,
-		DeletedAt: nil,
 	}
 
 	if err := l.repository.Create(like); err != nil {
@@ -157,14 +155,23 @@ func (l *likeService) Update(id *uuid.UUID, req *dto.LikeUpdateDTO) (*dto.LikeRe
 }
 
 func (l *likeService) toPostResponse(like *entity.Like) *dto.LikeResponseDTO {
+	var deletedAt *time.Time
+	if like.DeletedAt.Valid {
+		deletedAt = &like.DeletedAt.Time
+	}
+
+	var updatedAt *time.Time
+	if !like.UpdatedAt.IsZero() {
+		updatedAt = &like.UpdatedAt
+	}
 	return &dto.LikeResponseDTO{
 		Id:        like.Id,
 		UserId:    like.UserId,
 		PostId:    like.PostId,
 		Quantity:  like.Quantity,
 		CreatedAt: like.CreatedAt,
-		UpdatedAt: like.UpdatedAt,
-		DeletedAt: like.DeletedAt,
+		UpdatedAt: updatedAt,
+		DeletedAt: deletedAt,
 	}
 }
 
