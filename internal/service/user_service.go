@@ -38,8 +38,6 @@ func (u *userService) Create(req *dto.CreateDTO) (*dto.UserResponseDTO, error) {
 		Email:     req.Email,
 		IsActive:  true,
 		CreatedAt: time.Now(),
-		UpdatedAt: nil,
-		DeletedAt: nil,
 	}
 
 	if err := u.repository.Create(user); err != nil {
@@ -51,14 +49,23 @@ func (u *userService) Create(req *dto.CreateDTO) (*dto.UserResponseDTO, error) {
 }
 
 func (u *userService) toUserReponseDto(user *entity.User) *dto.UserResponseDTO {
+	var deletedAt *time.Time
+	if user.DeletedAt.Valid {
+		deletedAt = &user.DeletedAt.Time
+	}
+
+	var updatedAt *time.Time
+	if !user.UpdatedAt.IsZero() {
+		updatedAt = &user.UpdatedAt
+	}
 	return &dto.UserResponseDTO{
 		Id:        user.Id,
 		Name:      user.Name,
 		Email:     user.Email,
 		IsActive:  user.IsActive,
 		CreatedAT: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
-		DeletedAt: user.DeletedAt,
+		UpdatedAt: updatedAt,
+		DeletedAt: deletedAt,
 	}
 }
 
@@ -148,13 +155,13 @@ func (u *userService) Update(id *uuid.UUID, req *dto.UpdateDTO) (*dto.UserRespon
 		user.Name = req.Name
 	}
 
-	time := time.Now()
+	now := time.Now()
 
 	if !req.IsActive {
-		user.DeletedAt = &time
+		user.DeletedAt.Time = now
 	}
 
-	user.UpdatedAt = &time
+	user.UpdatedAt = now
 	user.IsActive = req.IsActive
 
 	if err := u.repository.Update(user); err != nil {
