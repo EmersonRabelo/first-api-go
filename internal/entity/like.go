@@ -13,7 +13,6 @@ type Like struct {
 	User      User           `gorm:"foreignKey:UserId;references:Id"`
 	PostId    uuid.UUID      `gorm:"type:uuid;not null;column:post_id;uniqueIndex:idx_user_post" json:"post_id"`
 	Post      Post           `gorm:"foreignKey:PostId;references:Id"`
-	Quantity  uint64         `gorm:"type:bigint;not null;column:quantity" json:"quantity"`
 	CreatedAt time.Time      `gorm:"not null;default:CURRENT_TIMESTAMP;column:created_at" json:"created_at"`
 	UpdatedAt time.Time      `gorm:"column:updated_at" json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index;column:deleted_at" json:"deleted_at"`

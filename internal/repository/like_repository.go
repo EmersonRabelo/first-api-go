@@ -80,9 +80,12 @@ func (l *likeRepository) Delete(id *uuid.UUID) error {
 }
 
 func (l *likeRepository) GetLikesCountByPostID(postID *uuid.UUID) (uint64, error) {
-	var like entity.Like
-	if err := l.db.Where("post_id = ?", postID).Last(&like).Error; err != nil {
+	var postLikeCount entity.PostLikesCount
+	if err := l.db.
+		Table("post_likes_count").
+		Where("post_id = ?", postID).
+		First(&postLikeCount).Error; err != nil {
 		return 0, err
 	}
-	return like.Quantity, nil
+	return postLikeCount.LikeCount, nil
 }

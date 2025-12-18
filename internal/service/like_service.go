@@ -37,34 +37,16 @@ type likeService struct {
 func (l *likeService) Create(req *dto.LikeCreateDTO) (*dto.LikeResponseDTO, error) {
 
 	if _, err := l.userService.FindById(&req.UserId); err != nil {
-		return nil, errors.New("Usuário não econtrado")
+		return nil, errors.New("Usuário não encontrado")
 	}
-
 	if _, err := l.postService.FindById(&req.PostId); err != nil {
 		return nil, errors.New("Postagem não encontrada")
-	}
-
-	quantity, err := l.incrementLike(&req.PostId)
-
-	if err != nil {
-		likesQuantity, err := l.repository.GetLikesCountByPostID(&req.PostId)
-
-		if err != nil {
-			return nil, err
-		}
-
-		quantity = likesQuantity
-		if err := l.setLike(&req.PostId, likesQuantity); err != nil {
-			fmt.Println("Não foi possivel sincronizar o redis, ", err)
-		}
-
 	}
 
 	like := &entity.Like{
 		Id:        uuid.New(),
 		UserId:    req.UserId,
 		PostId:    req.PostId,
-		Quantity:  quantity,
 		CreatedAt: time.Now(),
 	}
 
@@ -76,7 +58,25 @@ func (l *likeService) Create(req *dto.LikeCreateDTO) (*dto.LikeResponseDTO, erro
 		return nil, err
 	}
 
-	return l.toPostResponse(like), nil
+	quantity, err := l.incrementLike(&req.PostId)
+	if err != nil {
+		likesQuantity, err := l.repository.GetLikesCountByPostID(&req.PostId)
+		if err != nil {
+			return nil, err
+		}
+		quantity = likesQuantity
+		if err := l.setLike(&req.PostId, likesQuantity); err != nil {
+			fmt.Println("Não foi possível sincronizar o redis:", err)
+		}
+	}
+
+	return &dto.LikeResponseDTO{
+		Id:        like.Id,
+		UserId:    like.UserId,
+		PostId:    like.PostId,
+		Quantity:  quantity,
+		CreatedAt: like.CreatedAt,
+	}, nil
 }
 
 func (l *likeService) Delete(id *uuid.UUID) error {
@@ -86,32 +86,26 @@ func (l *likeService) Delete(id *uuid.UUID) error {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("Like não encontrado")
 		}
-
 		return err
 	}
 
-	quantity, err := l.decrementLike(&like.PostId)
+	if err := l.repository.Delete(id); err != nil {
+		return errors.New("Não foi possivel deletar o like")
+	}
 
-	if err != nil {
-		likesQuantity, err := l.repository.GetLikesCountByPostID(&like.PostId)
+	if _, err := l.decrementLike(&like.PostId); err != nil {
+		quantity, err := l.repository.GetLikesCountByPostID(&like.PostId)
 
 		if err != nil {
 			return err
 		}
 
-		quantity = likesQuantity
-		if err := l.setLike(&like.PostId, likesQuantity); err != nil {
+		if err := l.setLike(&like.PostId, quantity); err != nil {
 			fmt.Println("Não foi possivel sincronizar o redis, ", err)
 		}
 	}
 
-	like.Quantity = quantity
-
-	if err := l.repository.Update(like); err != nil {
-		return errors.New("Não possivel deletar o like")
-	}
-
-	return l.repository.Delete(id)
+	return nil
 }
 
 func (l *likeService) FindAll(postId *uuid.UUID, start, end time.Time, page int, pageSize int) (*dto.LikeResponseListDTO, error) {
@@ -191,7 +185,6 @@ func (l *likeService) toPostResponse(like *entity.Like) *dto.LikeResponseDTO {
 		Id:        like.Id,
 		UserId:    like.UserId,
 		PostId:    like.PostId,
-		Quantity:  like.Quantity,
 		CreatedAt: like.CreatedAt,
 		UpdatedAt: updatedAt,
 		DeletedAt: deletedAt,
