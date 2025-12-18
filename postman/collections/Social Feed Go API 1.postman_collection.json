@@ -146,7 +146,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"John Due\",\n  \"email\": \"johndue2025@email.com\"\n}",
+              "raw": "{\n  \"name\": \"John Due\",\n  \"email\": \"johndue@email.com\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -251,7 +251,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{host}}:{{port}}{{version}}/posts?page=1&page_size=10&start=2025-12-11&end=2025-12-18&user_id=55fc48ba-56d3-4e59-b49d-d1e93341258f",
+              "raw": "{{host}}:{{port}}{{version}}/posts?page=1&page_size=10&start=2025-12-11&end=2025-12-18",
               "host": [
                 "{{host}}"
               ],
@@ -283,8 +283,8 @@
                 {
                   "key": "user_id",
                   "value": "55fc48ba-56d3-4e59-b49d-d1e93341258f",
-                  "type": "text",
-                  "uuid": "77000240-8c83-4dbe-884f-4e10f4fb6a53"
+                  "uuid": "77000240-8c83-4dbe-884f-4e10f4fb6a53",
+                  "disabled": true
                 }
               ]
             },
@@ -311,7 +311,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "db5cc68d-9339-4ede-b29b-1d9e4986e931",
+                  "value": "6880a47a-a18f-48cd-b8df-e780d1fa6e78",
                   "description": "Post UUID"
                 }
               ]
@@ -333,7 +333,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": \"01890f54-d4aa-7b4a-a102-acae7b6a89e8\",\n  \"body\": \"Hello, this is my first post!\"\n}",
+              "raw": "{\n  \"user_id\": \"4e74d719-5844-4483-a3ff-7fd9cebcbc29\",\n  \"body\": \"Hello World!\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -415,7 +415,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "db5cc68d-9339-4ede-b29b-1d9e4986e931",
+                  "value": "6880a47a-a18f-48cd-b8df-e780d1fa6e78",
                   "description": "Post UUID"
                 }
               ]
@@ -438,7 +438,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{host}}:{{port}}{{version}}/likes?page=1&page_size=10&start=2025-12-11&end=2025-12-18&post_id=db5cc68d-9339-4ede-b29b-1d9e4986e931",
+              "raw": "{{host}}:{{port}}{{version}}/likes?page=1&page_size=10&start=2025-12-11&end=2025-12-18",
               "host": [
                 "{{host}}"
               ],
@@ -470,7 +470,8 @@
                 {
                   "key": "post_id",
                   "value": "db5cc68d-9339-4ede-b29b-1d9e4986e931",
-                  "uuid": "84c0ae50-ce21-4ecc-9679-9821ab5c985d"
+                  "uuid": "84c0ae50-ce21-4ecc-9679-9821ab5c985d",
+                  "disabled": true
                 }
               ]
             },
@@ -519,7 +520,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"user_id\": \"01890f54-d4aa-7b4a-a102-acae7b6a89e8\",\n  \"post_id\": \"02890f54-d4aa-7b4a-a102-acae7b6a89e8\"\n}",
+              "raw": "{\n  \"user_id\": \"4e74d719-5844-4483-a3ff-7fd9cebcbc29\",\n  \"post_id\": \"fb3e2e3e-6233-4475-8201-be6808ecac90\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -559,7 +560,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "52ee613c-f525-4c44-80e2-ce9401e17f1c",
+                  "value": "79feeae4-0aa8-4143-9820-1ef4793b57de",
                   "description": "Like UUID"
                 }
               ]
@@ -582,7 +583,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{host}}:{{port}}{{version}}/replies?page=1&page_size=10&start=2025-12-11&end=2025-12-18&post_id=8fa5a84e-98a4-4ba6-aacd-9aefef9ae5e0",
+              "raw": "{{host}}:{{port}}{{version}}/replies?page=1&page_size=10&start=2025-12-11&end=2025-12-18&user_id=55fc48ba-56d3-4e59-b49d-d1e93341258f",
               "host": [
                 "{{host}}"
               ],
@@ -593,23 +594,35 @@
               "query": [
                 {
                   "key": "page",
-                  "value": "1"
+                  "value": "1",
+                  "uuid": "1f594d92-027a-4261-b902-9e842e116aec"
                 },
                 {
                   "key": "page_size",
-                  "value": "10"
+                  "value": "10",
+                  "uuid": "9755c8cc-6ab7-4d01-afd3-b47d787b1f4b"
                 },
                 {
                   "key": "start",
-                  "value": "2025-12-11"
+                  "value": "2025-12-11",
+                  "uuid": "d063a4ac-3af3-46a0-b786-5b051535db3d"
                 },
                 {
                   "key": "end",
-                  "value": "2025-12-18"
+                  "value": "2025-12-18",
+                  "uuid": "c9da7164-577e-4562-b963-53694c7ff770"
                 },
                 {
                   "key": "post_id",
-                  "value": "8fa5a84e-98a4-4ba6-aacd-9aefef9ae5e0"
+                  "value": "8fa5a84e-98a4-4ba6-aacd-9aefef9ae5e0",
+                  "uuid": "868fccaa-8299-4ae9-9b8b-68297d884dd2",
+                  "disabled": true
+                },
+                {
+                  "key": "user_id",
+                  "value": "55fc48ba-56d3-4e59-b49d-d1e93341258f",
+                  "type": "text",
+                  "uuid": "f957358c-06f5-4ab9-85e6-bc8e7dc44c18"
                 }
               ]
             },
@@ -756,17 +769,17 @@
   ],
   "variable": [
     {
-      "id": "7d4f6122-2977-4830-9b72-15432696f5ff",
+      "id": "ffcf077c-9655-446a-be82-663246eaf66c",
       "key": "host",
       "value": "http://localhost:8080/api/v1"
     },
     {
-      "id": "92efbd08-d210-44f0-ae2d-09602bf8c6ea",
+      "id": "a57fc566-9a3a-4212-b2c4-2cd60a50dbdb",
       "key": "port",
       "value": ""
     },
     {
-      "id": "6f951e10-8f0d-48fc-829f-26c82d115c6e",
+      "id": "e396f23a-dd71-4385-bdf8-7199a03c0453",
       "key": "version",
       "value": ""
     }
