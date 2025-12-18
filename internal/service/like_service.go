@@ -80,12 +80,35 @@ func (l *likeService) Create(req *dto.LikeCreateDTO) (*dto.LikeResponseDTO, erro
 }
 
 func (l *likeService) Delete(id *uuid.UUID) error {
-	if _, err := l.repository.FindById(id); err != nil {
+	like, err := l.repository.FindById(id)
+
+	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return errors.New("Like não encontrado")
 		}
 
 		return err
+	}
+
+	quantity, err := l.decrementLike(&like.PostId)
+
+	if err != nil {
+		likesQuantity, err := l.repository.GetLikesCountByPostID(&like.PostId)
+
+		if err != nil {
+			return err
+		}
+
+		quantity = likesQuantity
+		if err := l.setLike(&like.PostId, likesQuantity); err != nil {
+			fmt.Println("Não foi possivel sincronizar o redis, ", err)
+		}
+	}
+
+	like.Quantity = quantity
+
+	if err := l.repository.Update(like); err != nil {
+		return errors.New("Não possivel deletar o like")
 	}
 
 	return l.repository.Delete(id)
