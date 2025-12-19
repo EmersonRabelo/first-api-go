@@ -5,7 +5,6 @@ import (
 	"log"
 
 	config "github.com/EmersonRabelo/first-api-go/internal/config"
-	interfaces "github.com/EmersonRabelo/first-api-go/internal/config/interfaces"
 	controller "github.com/EmersonRabelo/first-api-go/internal/controller"
 	database "github.com/EmersonRabelo/first-api-go/internal/database"
 	redis "github.com/EmersonRabelo/first-api-go/internal/redis"
@@ -14,7 +13,7 @@ import (
 	service "github.com/EmersonRabelo/first-api-go/internal/service"
 )
 
-var setting interfaces.SettingProvider
+var setting config.SettingProvider
 
 func init() {
 	fmt.Println("Application initializing...")
