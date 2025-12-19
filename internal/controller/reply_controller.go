@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	errorDTO "github.com/EmersonRabelo/first-api-go/internal/dtos/error"
 	replyDTO "github.com/EmersonRabelo/first-api-go/internal/dtos/reply"
-	successDTO "github.com/EmersonRabelo/first-api-go/internal/dtos/success"
+	errorDTO "github.com/EmersonRabelo/first-api-go/internal/dtos/shared/error"
+	successDTO "github.com/EmersonRabelo/first-api-go/internal/dtos/shared/success"
 	"github.com/EmersonRabelo/first-api-go/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

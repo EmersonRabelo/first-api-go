@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	errorDTO "github.com/EmersonRabelo/first-api-go/internal/dtos/error"
-	successDTO "github.com/EmersonRabelo/first-api-go/internal/dtos/success"
+	errorDTO "github.com/EmersonRabelo/first-api-go/internal/dtos/shared/error"
+	successDTO "github.com/EmersonRabelo/first-api-go/internal/dtos/shared/success"
 	userDTO "github.com/EmersonRabelo/first-api-go/internal/dtos/user"
 	service "github.com/EmersonRabelo/first-api-go/internal/service"
 	"github.com/gin-gonic/gin"

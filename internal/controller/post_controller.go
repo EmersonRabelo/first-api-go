@@ -8,9 +8,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
-	errorDTO "github.com/EmersonRabelo/first-api-go/internal/dtos/error"
 	postDTO "github.com/EmersonRabelo/first-api-go/internal/dtos/post"
-	successDTO "github.com/EmersonRabelo/first-api-go/internal/dtos/success"
+	errorDTO "github.com/EmersonRabelo/first-api-go/internal/dtos/shared/error"
+	successDTO "github.com/EmersonRabelo/first-api-go/internal/dtos/shared/success"
 	service "github.com/EmersonRabelo/first-api-go/internal/service"
 )
 
