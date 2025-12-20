@@ -45,7 +45,7 @@ func (r *replyService) Create(req *dto.ReplyCreateDTO) (*dto.ReplyResponseDTO, e
 	quantity, err := r.incrementLike(&req.PostId)
 
 	if err != nil {
-		likesQuantity, err := r.repository.GetLikesCountByPostID(&req.PostId)
+		likesQuantity, err := r.repository.GetRepliesCountByPostID(&req.PostId)
 
 		if err != nil {
 			return nil, err
@@ -213,7 +213,7 @@ func (l *replyService) incrementLike(id *uuid.UUID) (uint64, error) {
 }
 
 func (l *replyService) setLike(id *uuid.UUID, value uint64) error {
-	if err := redisService.SetCounter(l.redisClient, "like:post", id.String(), value); err != nil {
+	if err := redisService.SetCounter(l.redisClient, "reply:post", id.String(), value); err != nil {
 		return err
 	}
 

@@ -12,7 +12,7 @@ type ReplyRepository interface {
 	Create(reply *entity.Reply) error
 	FindById(id *uuid.UUID) (*entity.Reply, error)
 	FindAll(postID, userID *uuid.UUID, start, end time.Time, page int, pageSize int) ([]entity.Reply, int64, error)
-	GetLikesCountByPostID(postID *uuid.UUID) (uint64, error)
+	GetRepliesCountByPostID(postID *uuid.UUID) (uint64, error)
 	Update(reply *entity.Reply) error
 	Delete(id *uuid.UUID) error
 }
@@ -82,7 +82,7 @@ func (r *replyRepository) Delete(id *uuid.UUID) error {
 	return r.db.Delete(&entity.Reply{}, id).Error
 }
 
-func (l *replyRepository) GetLikesCountByPostID(postID *uuid.UUID) (uint64, error) {
+func (l *replyRepository) GetRepliesCountByPostID(postID *uuid.UUID) (uint64, error) {
 	var reply entity.Reply
 	if err := l.db.Where("post_id = ?", postID).Last(&reply).Error; err != nil {
 		return 0, err
