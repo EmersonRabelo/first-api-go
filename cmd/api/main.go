@@ -7,10 +7,12 @@ import (
 	config "github.com/EmersonRabelo/first-api-go/internal/config"
 	controller "github.com/EmersonRabelo/first-api-go/internal/controller"
 	database "github.com/EmersonRabelo/first-api-go/internal/database"
+	"github.com/EmersonRabelo/first-api-go/internal/queue"
 	redis "github.com/EmersonRabelo/first-api-go/internal/redis"
 	repository "github.com/EmersonRabelo/first-api-go/internal/repository"
-	router "github.com/EmersonRabelo/first-api-go/internal/router"
 	service "github.com/EmersonRabelo/first-api-go/internal/service"
+	reportService "github.com/EmersonRabelo/first-api-go/internal/service/report"
+	router "github.com/EmersonRabelo/first-api-go/router"
 )
 
 var setting config.SettingProvider
@@ -50,7 +52,16 @@ func main() {
 	replyService := service.NewReplyService(replyRepository, userService, postService, redisClient)
 	replyHandler := controller.NewReplyHandler(replyService)
 
-	r := router.SetupRouter(userHandler, postHandler, likeHandler, replyHandler)
+	channel := config.InitBroker()
+	exchange := "topic_report"
+	routingKey := "post.report.created"
+
+	reportRepository := repository.NewReportRepository(db)
+	reportProducer := queue.NewReportProducer(channel, exchange, routingKey)
+	reportService := reportService.NewReportService(reportRepository, reportProducer)
+	reportHandler := controller.NewReportHandler(reportService)
+
+	r := router.SetupRouter(userHandler, postHandler, likeHandler, replyHandler, reportHandler)
 
 	port := setting.GetServer().Port
 
