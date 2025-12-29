@@ -12,6 +12,7 @@ type SettingProvider interface {
 	GetEnvironment() string
 	GetServer() Server
 	GetDatabase() Database
+	GetBroker() Broker
 	IsProd() bool
 	IsTest() bool
 	IsLocal() bool
@@ -30,10 +31,18 @@ type Server struct {
 	Port string
 }
 
+type Broker struct {
+	Host     string
+	Port     string
+	User     string
+	Password string
+}
+
 type Setting struct {
 	Environment string
 	Server      Server
 	Database    Database
+	Broker      Broker
 }
 
 var AppSetting SettingProvider
@@ -56,6 +65,7 @@ func loadSetting() *Setting {
 		_ = godotenv.Load()
 		// se não achar nada, usa do sistema mesmo
 	}
+
 	return &Setting{
 		Environment: env,
 		Server: Server{
@@ -68,6 +78,12 @@ func loadSetting() *Setting {
 			Pwd:     getEnvOrDefault("DB_PASSWORD", "1234"),
 			Name:    getEnvOrDefault("DB_NAME", "go-api"),
 			SSLMode: getEnvOrDefault("DB_SSL_MODE", "disable"),
+		},
+		Broker: Broker{
+			Host:     getEnvOrDefault("AMQP_HOST", "localhost"),
+			Port:     getEnvOrDefault("AMQP_PORT", "5672"),
+			User:     getEnvOrDefault("AMQP_USER", "guest"),
+			Password: getEnvOrDefault("AMQP_PASSWORD", "guest"),
 		},
 	}
 }
@@ -83,6 +99,7 @@ func getEnvOrDefault(key, def string) string {
 func (s *Setting) GetEnvironment() string { return s.Environment }
 func (s *Setting) GetServer() Server      { return s.Server }
 func (s *Setting) GetDatabase() Database  { return s.Database }
+func (s *Setting) GetBroker() Broker      { return s.Broker }
 func (s *Setting) IsProd() bool           { return s.Environment == "production" }
 func (s *Setting) IsTest() bool           { return s.Environment == "test" }
 func (s *Setting) IsLocal() bool          { return s.Environment == "local" || s.Environment == "development" }
