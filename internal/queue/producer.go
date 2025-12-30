@@ -24,21 +24,22 @@ func NewReportProducer(channel *amqp.Channel, exchange, routingKey string) *Repo
 	}
 }
 
-func (producer *ReportProducer) Publish(context context.Context, message *contract.CreateReportMessage) error {
+func (p *ReportProducer) Publish(ctx context.Context, message *contract.CreateReportMessage) error {
 	body, err := json.Marshal(message)
-
 	if err != nil {
 		return err
 	}
 
-	return producer.channel.PublishWithContext(
-		context,
-		producer.exchange,
-		producer.routingKey,
-		false,
-		false, amqp.Publishing{
-			ContentType: "application/json",
-			Body:        body,
+	return p.channel.PublishWithContext(
+		ctx,
+		p.exchange,
+		p.routingKey,
+		false, // mandatory (considere true se quiser detectar unroutable)
+		false, // immediate (normalmente false mesmo)
+		amqp.Publishing{
+			ContentType:  "application/json",
+			Body:         body,
+			DeliveryMode: amqp.Persistent, // opcional
 		},
 	)
 }
