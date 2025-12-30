@@ -28,10 +28,12 @@ type ReportService struct {
 	userService service.UserService
 }
 
-func NewReportService(repository ReportRepository, producer ReportProducer) *ReportService {
+func NewReportService(repository ReportRepository, producer ReportProducer, postService service.PostService, userService service.UserService) *ReportService {
 	return &ReportService{
-		repository: repository,
-		producer:   producer,
+		repository:  repository,
+		producer:    producer,
+		postService: postService,
+		userService: userService,
 	}
 }
 
