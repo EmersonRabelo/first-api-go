@@ -52,13 +52,17 @@ func main() {
 	replyService := service.NewReplyService(replyRepository, userService, postService, redisClient)
 	replyHandler := controller.NewReplyHandler(replyService)
 
-	channel := config.InitBroker()
+	conn, channel := config.InitBroker()
+
+	defer channel.Close()
+	defer conn.Close()
+
 	exchange := "topic_report"
 	routingKey := "post.report.created"
 
 	reportRepository := repository.NewReportRepository(db)
 	reportProducer := queue.NewReportProducer(channel, exchange, routingKey)
-	reportService := reportService.NewReportService(reportRepository, reportProducer)
+	reportService := reportService.NewReportService(reportRepository, reportProducer, postService, userService)
 	reportHandler := controller.NewReportHandler(reportService)
 
 	r := router.SetupRouter(userHandler, postHandler, likeHandler, replyHandler, reportHandler)

@@ -23,15 +23,12 @@ func NewRabbitMQChannel(conn *amqp.Connection) (*amqp.Channel, error) {
 	return ch, nil
 }
 
-func InitBroker() *amqp.Channel {
+func InitBroker() (*amqp.Connection, *amqp.Channel) {
 	params := AppSetting.GetBroker()
 
 	url := fmt.Sprintf(
 		"amqp://%s:%s@%s:%s/",
-		params.User,
-		params.Password,
-		params.Host,
-		params.Port,
+		params.User, params.Password, params.Host, params.Port,
 	)
 
 	conn, err := NewRabbitMQConnection(url)
@@ -39,14 +36,11 @@ func InitBroker() *amqp.Channel {
 		log.Fatalf("Erro ao conectar no RabbitMQ: %v", err)
 	}
 
-	defer conn.Close()
-
-	channel, err := NewRabbitMQChannel(conn)
+	ch, err := NewRabbitMQChannel(conn)
 	if err != nil {
+		_ = conn.Close()
 		log.Fatalf("Erro ao abrir channel no RabbitMQ: %v", err)
 	}
 
-	defer channel.Close()
-
-	return channel
+	return conn, ch
 }
