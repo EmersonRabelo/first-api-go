@@ -26,7 +26,6 @@ func NewReportProducer(channel *amqp.Channel, exchange, routingKey string) *Repo
 
 func (p *ReportProducer) Publish(ctx context.Context, message *contract.CreateReportMessage) error {
 	body, err := json.Marshal(message)
-
 	if err != nil {
 		return err
 	}
