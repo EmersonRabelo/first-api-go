@@ -251,7 +251,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{host}}:{{port}}{{version}}/posts?page=1&page_size=10&start=2025-12-11&end=2025-12-18&user_id=55fc48ba-56d3-4e59-b49d-d1e93341258f",
+              "raw": "{{host}}:{{port}}{{version}}/posts?page=1&page_size=10&start=2025-12-11&end=2025-12-18",
               "host": [
                 "{{host}}"
               ],
@@ -283,8 +283,8 @@
                 {
                   "key": "user_id",
                   "value": "55fc48ba-56d3-4e59-b49d-d1e93341258f",
-                  "type": "text",
-                  "uuid": "77000240-8c83-4dbe-884f-4e10f4fb6a53"
+                  "uuid": "77000240-8c83-4dbe-884f-4e10f4fb6a53",
+                  "disabled": true
                 }
               ]
             },
@@ -423,6 +423,100 @@
             "description": "Delete a post by its unique identifier."
           },
           "response": []
+        },
+        {
+          "name": "Report Post",
+          "id": "bd99eb9a-2897-4719-993a-49ad7e14fb00",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reporter_id\" : \"22d85700-7f61-487a-94dd-41149e5abef4\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}:{{port}}{{version}}/posts/:id/report",
+              "host": [
+                "{{host}}"
+              ],
+              "port": "{{port}}{{version}}",
+              "path": [
+                "posts",
+                ":id",
+                "report"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "fb3e2e3e-6233-4475-8201-be6808ecac90",
+                  "uuid": "50ae0ca4-bc87-49be-894b-84c0537be28f"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "id": "9a1d31ed-5ca5-40ce-acac-7d0a3301f2d5",
+              "name": "New Request",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"reporter_id\" : \"22d85700-7f61-487a-94dd-41149e5abef4\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}:{{port}}{{version}}/posts/:id/report",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "port": "{{port}}{{version}}",
+                  "path": [
+                    "posts",
+                    ":id",
+                    "report"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "fb3e2e3e-6233-4475-8201-be6808ecac90",
+                      "uuid": "50ae0ca4-bc87-49be-894b-84c0537be28f"
+                    }
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Date",
+                  "value": "Tue, 30 Dec 2025 18:37:13 GMT"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "159"
+                }
+              ],
+              "cookie": [],
+              "responseTime": "2025-12-30T18:46:39.842Z",
+              "body": "{\n    \"id\": \"4208e37c-0a71-4667-a1aa-f7e681a74b87\",\n    \"msg\": \"Sua denuncia foi recebida com sucesso!\",\n    \"status\": \"pending\",\n    \"created_at\": \"2025-12-30T15:37:13.755461-03:00\"\n}"
+            }
+          ]
         }
       ],
       "id": "7fff788b-b290-43d4-9fac-720a64243e22",
@@ -756,17 +850,17 @@
   ],
   "variable": [
     {
-      "id": "7d4f6122-2977-4830-9b72-15432696f5ff",
+      "id": "aebad42b-c241-43ce-a5d9-154c045c7d4f",
       "key": "host",
       "value": "http://localhost:8080/api/v1"
     },
     {
-      "id": "92efbd08-d210-44f0-ae2d-09602bf8c6ea",
+      "id": "7e97cef2-0b93-44fb-a256-7a16852e219c",
       "key": "port",
       "value": ""
     },
     {
-      "id": "6f951e10-8f0d-48fc-829f-26c82d115c6e",
+      "id": "e3dcf798-8c33-4a69-8644-063431106d6c",
       "key": "version",
       "value": ""
     }
