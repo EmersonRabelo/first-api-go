@@ -7,10 +7,12 @@ import (
 	config "github.com/EmersonRabelo/first-api-go/internal/config"
 	controller "github.com/EmersonRabelo/first-api-go/internal/controller"
 	database "github.com/EmersonRabelo/first-api-go/internal/database"
+	"github.com/EmersonRabelo/first-api-go/internal/handler"
 	"github.com/EmersonRabelo/first-api-go/internal/queue"
 	redis "github.com/EmersonRabelo/first-api-go/internal/redis"
 	repository "github.com/EmersonRabelo/first-api-go/internal/repository"
 	service "github.com/EmersonRabelo/first-api-go/internal/service"
+	consumer "github.com/EmersonRabelo/first-api-go/internal/service/consumer"
 	reportService "github.com/EmersonRabelo/first-api-go/internal/service/report"
 	router "github.com/EmersonRabelo/first-api-go/router"
 )
@@ -23,8 +25,6 @@ func init() {
 	setting = config.GetSetting()
 
 	config.InitDatabase()
-
-	fmt.Println("Initialized.")
 }
 
 func main() {
@@ -58,18 +58,34 @@ func main() {
 	defer conn.Close()
 
 	exchange := "topic_report"
-	routingKey := "post.report.created"
+	routingKeyProducer := "post.report.created"
+	routingKeyConsumer := "post.report.response"
+	queueName := "q.report.response"
 
 	reportRepository := repository.NewReportRepository(db)
-	reportProducer := queue.NewReportProducer(channel, exchange, routingKey)
+	reportProducer := queue.NewReportProducer(channel, exchange, routingKeyProducer)
 	reportService := reportService.NewReportService(reportRepository, reportProducer, postService, userService)
 	reportHandler := controller.NewReportHandler(reportService)
+
+	reportConsumerService := consumer.NewConsumerReportService(reportRepository)
+	handler := handler.NewReportHandler(reportConsumerService)
+	reportConsumer := queue.NewReportConsumer(channel, exchange, routingKeyConsumer, queueName, handler)
+
+	go func() {
+		if err := reportConsumer.Start(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	r := router.SetupRouter(userHandler, postHandler, likeHandler, replyHandler, reportHandler)
 
 	port := setting.GetServer().Port
 
+	fmt.Println("Port", port)
+
 	if err := r.Run(fmt.Sprintf(":%s", port)); err != nil {
 		log.Fatal("Falha ao iniciar servidor:", err)
 	}
+
+	fmt.Println("Initialized.")
 }
