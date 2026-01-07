@@ -67,7 +67,7 @@ func main() {
 	reportService := reportService.NewReportService(reportRepository, reportProducer, postService, userService)
 	reportHandler := controller.NewReportHandler(reportService)
 
-	reportConsumerService := consumer.NewConsumerReportService(reportRepository)
+	reportConsumerService := consumer.NewConsumerReportService(reportRepository, postRepository)
 	handler := handler.NewReportHandler(reportConsumerService)
 	reportConsumer := queue.NewReportConsumer(channel, exchange, routingKeyConsumer, queueName, handler)
 
