@@ -17,6 +17,7 @@ import (
 	router "github.com/EmersonRabelo/first-api-go/router"
 )
 
+var Version = ""
 var setting config.SettingProvider
 
 func init() {
@@ -87,5 +88,5 @@ func main() {
 		log.Fatal("Falha ao iniciar servidor:", err)
 	}
 
-	fmt.Println("Initialized.")
+	fmt.Println("Initialized ", Version)
 }
