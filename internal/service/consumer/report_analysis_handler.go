@@ -79,6 +79,12 @@ func (crs *ConsumerReportService) Create(msg contracts.ReportAnalysisResultMessa
 		return errors.New("Error updating post flag")
 	}
 
+	if post.Flag == entity.Removed || post.Flag == entity.HiddenPendingReview {
+		if err := crs.postRepository.Delete(&post.Id); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
